@@ -34,3 +34,11 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# misc
+*.gz
+*.log
+*.swp
+*.swo
+*.rar
+tmp/
