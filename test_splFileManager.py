@@ -1,4 +1,5 @@
 import srmparserlite.splFileManager.zipper as zipper
+import srmparserlite.splFileManager.fm as filemanager
 
 
 def TestUnzipFunc():
@@ -12,5 +13,11 @@ def TestUnzipFunc():
    for fn in v_files:
       uz.Decompress(fn, fh)
 
+def TestFilemanager():
+   fm = filemanager.FileManager()
+   fm.ScanDir(r"/myfiles/Source/vsProject/srmparserlite/pplog/", r"/myfiles/Source/vsProject/srmparserlite/sslog/")
+   fm.GenSingleFile()
+
 if __name__ == '__main__':  # Only when run
-   TestUnzipFunc()
+   #TestUnzipFunc()
+   TestFilemanager()
