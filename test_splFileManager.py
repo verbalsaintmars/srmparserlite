@@ -1,5 +1,7 @@
 import srmparserlite.splFileManager.zipper as zipper
 import srmparserlite.splFileManager.fm as filemanager
+import srmparserlite.splFileManager.filenamegen as genfile
+import srmparserlite.splParser.parser as parser
 
 
 def TestUnzipFunc():
@@ -18,21 +20,35 @@ def TestFilemanager():
    fm = filemanager.GenBigFile()
    fm.ScanDir(
          r"/myfiles/Source/vsProject/srmparserlite/pplog/",
-         r"/myfiles/Source/vsProject/srmparserlite/sslog/")
+         r"/myfiles/Source/vsProject/srmparserlite/sslog")
    fm.GenSingleFile()
 
    fm2 = filemanager.GenBigFile()
-   fm2.ScanDir(r"/myfiles/Source/vsProject/srmparserlite/pplog/")
+   fm2.ScanDir(r"/myfiles/Source/vsProject/srmparserlite/pplog")
    fm2.GenSingleFile()
 
 
 def TestReadBigFile():
-   rb = filemanager.ReadBigFile(r"/myfiles/Source/vsProject/srmparserlite/pplog/")
+   rb = filemanager.ReadBigFile(r"/myfiles/Source/vsProject/srmparserlite/pplog")
    for fl in rb.Read():
       print(fl)
 
+def TestGenFile():
+   genf = genfile.GenResultFile(r"/myfiles/Source/vsProject/srmparserlite/pplog")
+   print(genf.genFileName())
+
+def TestSplParser():
+   dirRoot = [
+         r"/myfiles/Source/vsProject/srmparserlite/pplog",
+         r"/myfiles/Source/vsProject/srmparserlite/sslog"]
+   pa = parser.Parser(r"/myfiles/Source/vsProject/srmparserlite/sslog")
+   pa.Start()
+
+
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()
-   TestFilemanager()
-#   TestReadBigFile()
+   #TestFilemanager()
+   #TestReadBigFile()
+   TestSplParser()
+   #TestGenFile()
 

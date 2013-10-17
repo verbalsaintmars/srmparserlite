@@ -8,4 +8,5 @@ class SrmTrait(srm500_t.SrmTrait):
    __slots__ = ["trailOffSet"]
 
    def __init__(this):
+      super(SrmTrait, this).__init__()
       this.trailOffSet = "Writer rotated...".__len__() + 1  # + 1 as for \n

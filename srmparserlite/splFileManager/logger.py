@@ -6,7 +6,7 @@ __package__ = "srmparserlite.splFileManager"
 from ..splGeneral.deco import VersionDeco
 from ..splGeneral.exceptions import NoTraitException
 from ..splGeneral.exceptions import NoHeaderLineException
-from .traits import Traits
+from ..splTraits.traits import Traits
 import re
 
 
@@ -23,12 +23,12 @@ class ConcatLog(object):
       this.srmTrait = None
 
    def WriteSingleFile(this, a_fileObj):
-      from ..splLineClass.general import VersionParser
+      from ..splLineClass.general import VersionFmt
       from os import SEEK_END
       import importlib
       if this.numOfFiles == 1:
          l_headLine = a_fileObj.readline()
-         l_verp = VersionParser()
+         l_verp = VersionFmt()
          l_m = re.match(l_verp.VERSIONFMT, l_headLine)
 
          if l_m is not None:

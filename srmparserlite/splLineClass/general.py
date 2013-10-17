@@ -1,11 +1,10 @@
 __package__ = "srmparserlite.splLineClass"
 
 from ..splGeneral.deco import VersionDeco
-import re
 
 
 @VersionDeco(1)
-class VersionParser(object):
+class VersionFmt(object):
    __slots__ = ["versionFmt"]
 
    def __init__(this):

@@ -60,16 +60,8 @@ class SrmTrait(object):
    HEADERFMT = property(getHeaderFmt)
    LINEFMT = property(getLineRegexFmt)
    TIMEFMT = property(getTimeFmt)
-   INFOFMT = property(getHeaderFmt)
-   TYPEFMT = property(getInfoFmt)
+   INFOFMT = property(getInfoFmt)
+   TYPEFMT = property(getTypeFmt)
    DATAFMT = property(getDataFmt)
    BUNDLEFMT = property(getBundleFmt)
    TRAILOFFSET = property(GetTrailOffSet)
-
-
-def tester():
-   srml = SrmTrait()
-   print(srml.__version__)
-
-if __name__ == '__main__':  # Only when run
-   tester()

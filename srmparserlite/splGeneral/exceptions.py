@@ -3,7 +3,7 @@ __package__ = "srmparserlite.splGeneral"
 
 class NoHeaderLineException(Exception):
    def __init__(this):
-      this.message = "No Header Line in Log file!"
+      this.message = "No Header Line in Log file or format error!"
 
 
 class UnSupportFormatException(Exception):

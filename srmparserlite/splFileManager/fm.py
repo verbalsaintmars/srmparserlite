@@ -19,16 +19,16 @@ class ReadBigFile(object):
    """
    Thread safe
    """
-   __slots__ = ["dirRoot"]
+   __slots__ = ["rootDir"]
 
-   def __init__(this, a_dirRoot):
-      this.dirRoot = a_dirRoot
+   def __init__(this, a_rootDir):
+      this.rootDir = a_rootDir
 
    def Read(this):
       import os
       with open(
             os.path.join(
-               os.path.normpath(this.dirRoot),
+               os.path.normpath(this.rootDir),
                filefmt.OneBigLogFileName())) as l_bfileObj:
 
                for l_line in l_bfileObj:
