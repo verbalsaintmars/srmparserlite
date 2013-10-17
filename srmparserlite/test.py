@@ -1,45 +1,35 @@
-import os
+import multiprocessing.pool as Po
 
-"""
-def Test():
-   with open(
-         os.path.join(
-            os.path.normpath(r"/myfiles/Source/vsProject/srmparserlite/pplog/"),
-            "OneBigLog.log")) as l_bfileObj:
+i = 0
 
-            for l_line in l_bfileObj:
-               yield l_line
 
-it = Test()
-ln = next(it)
+def Fuck(a_a):
+   print(a_a + 1)
 
-print(ln)
-print(ln)
-print("--------------------")
+print(Po.cpu_count())
 
-for a in it:
+pool = Po.ThreadPool(processes=Po.cpu_count())
+pool.map(Fuck, (1, 2, 3))
+pool.close()
+pool.join()
+
+print("--------")
+
+
+import datetime
+import time
+import os.path
+
+l_fileTime = os.path.getmtime(r"/etc/zshrc")
+l_currentTime = time.time()
+
+def Tmp((a,b,c)):
    print(a)
-"""
+   print(b)
+   print(c)
 
-class Test(object):
-   __slots__ = ["a"]
-   def __init__(this):
-      pass
+def Ret():
+   return (1,2,3)
 
-   def fuck(this):
-      if hasattr(this, "a"):
-         print("fuck")
-      else:
-         this.a = "10"
-         print("asd")
+Tmp(Ret())
 
-class DE(Test):
-   pass
-
-t = DE()
-t.b = 20
-t.fuck()
-t.fuck()
-t.fuck()
-t.fuck()
-t.fuck()

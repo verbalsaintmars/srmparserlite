@@ -14,3 +14,8 @@ class UnSupportFormatException(Exception):
 class NoTraitException(Exception):
    def __init__(this):
       this.message = "No version trait can be found!"
+
+
+class NoFileToGenException(Exception):
+   def __init__(this):
+      this.message = "No gz or log files to generate one big file!"

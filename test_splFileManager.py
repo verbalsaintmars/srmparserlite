@@ -17,15 +17,12 @@ def TestUnzipFunc():
 
 
 def TestFilemanager():
-   fm = filemanager.GenBigFile()
-   fm.ScanDir(
-         r"/myfiles/Source/vsProject/srmparserlite/pplog/",
-         r"/myfiles/Source/vsProject/srmparserlite/sslog")
-   fm.GenSingleFile()
+   fm = filemanager.GenBigFile(0)  # number of days
+   dirs = (r"/myfiles/Source/vsProject/srmparserlite/pplog/",
+           r"/myfiles/Source/vsProject/srmparserlite/sslog",
+           r"/myfiles/Source/vsProject/srmparserlite/vvvog")
 
-   fm2 = filemanager.GenBigFile()
-   fm2.ScanDir(r"/myfiles/Source/vsProject/srmparserlite/pplog")
-   fm2.GenSingleFile()
+   fm.Start(*dirs)
 
 
 def TestReadBigFile():
@@ -33,9 +30,11 @@ def TestReadBigFile():
    for fl in rb.Read():
       print(fl)
 
+
 def TestGenFile():
    genf = genfile.GenResultFile(r"/myfiles/Source/vsProject/srmparserlite/pplog")
    print(genf.genFileName())
+
 
 def TestSplParser():
    dirRoot = [
@@ -49,8 +48,7 @@ def TestSplParser():
 
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()
-   #TestFilemanager()
+   TestFilemanager()
    #TestReadBigFile()
-   TestSplParser()
+   #TestSplParser()
    #TestGenFile()
-

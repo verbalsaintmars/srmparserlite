@@ -3,15 +3,19 @@ DONE: 1. scan given directories for files , 1 primary, 1 secondary / provide fil
 DONE: 2. If contains zipped file, unzip it into one large file, if the large file exist,
          skip unzipping, skip checking .log files, always unzip gz files first
 DONE: 3. If contains .log files, concat it into one large file
-TODO: 4. Mix, dir contains zipped and log files. sort zipped and log file into list.
-         unzip zip file , concat with log files, all into one large file
+TODO: 4. time in the spl will be compare as epoch utc time in seconds
 """
 __package__ = "srmparserlite.splFileManager"
 
 from ..splGeneral.deco import VersionDeco
 from ..splTraits import filefmt
+from ..splGeneral.exceptions import NoFileToGenException
+import multiprocessing.pool as mpo
 import os.path
-import threading
+import glob
+import re
+import time
+import datetime
 
 
 @VersionDeco(1)
@@ -25,7 +29,6 @@ class ReadBigFile(object):
       this.rootDir = a_rootDir
 
    def Read(this):
-      import os
       with open(
             os.path.join(
                os.path.normpath(this.rootDir),
@@ -35,135 +38,114 @@ class ReadBigFile(object):
                   yield l_line
 
 
-
 @VersionDeco(1)
 class GenBigFile(object):
+   """
+   Generate one big log file
+   """
    __slots__ = [
-         "firstDir",
-         "secDir",
-         "firstGzFiles",
-         "secGzFiles",
-         "firstLogFiles",
-         "secLogFiles"]
+         "timeFlag"]
 
-   def __init__(this):
-      this.firstGzFiles = []
-      this.secGzFiles = []
-      this.firstLogFiles = []
-      this.secLogFiles = []
+   def __init__(this, a_timeFlag):
+      this.timeFlag = a_timeFlag  # 0 is always generate, 1 is 1 day
 
-   def ScanDir(this, a_1dir, a_2dir=None):
+   def TmpScan(this, a_rootDir):
+      print(a_rootDir)
+      return (1, 2, 3)
+
+   def TmpGen(this, (a, b, c)):
+      print(a)
+      print(b)
+      print(c)
+
+   def Start(this, *a_rootDirs):
+      l_tpool = mpo.ThreadPool(processes=mpo.cpu_count())
+      l_result = l_tpool.map_async(this.ScanDir, a_rootDirs, 1)
+      l_result.get()
+
+   def ScanDir(this, a_rootDir):
       """
-      Passes in first and second dir root
+      Passes in dir that want to scan
       """
-      import glob
-      import re
-      this.firstDir = os.path.normpath(a_1dir)
+      l_normRootDir = os.path.normpath(a_rootDir)
+      l_gzFiles = []
+      l_logFiles = []
 
-      l_firstGi = glob.iglob(
+      l_globIter = glob.iglob(
             os.path.join(
-               this.firstDir, "*.gz"))
+               l_normRootDir, "*.gz"))
 
-      for gzfn in l_firstGi:
+      for gzfn in l_globIter:
          l_m = re.match(filefmt.SrmLogGzFileNameFormater(), os.path.basename(gzfn))
          if l_m is not None:
-            this.firstGzFiles.append(gzfn)
+            l_gzFiles.append(gzfn)
 
-      if this.firstGzFiles.__len__() == 0:
-         this.firstGzFiles = None
-
-         l_firstLi = glob.iglob(
-            os.path.join(
-               this.firstDir, "*.log"))
-
-         for logfn in l_firstLi:
-            l_m = re.match(filefmt.SrmLogFileNameFormater(), os.path.basename(logfn))
-            if l_m is not None:
-               this.firstLogFiles.append(logfn)
-
-         print(this.firstLogFiles)
-
-         if this.firstLogFiles.__len__() == 0:
-            this.firstLogFiles = None
-            this.firstDir = None
+      if l_gzFiles.__len__() == 0:
+         l_gzFiles = None
       else:
-         this.firstLogFiles = None
+         l_gzFiles.sort()
 
-      if a_2dir is not None:
-         this.secDir = os.path.normpath(a_2dir)
-         l_secGi = glob.iglob(
-            os.path.join(
-               this.secDir, "*.gz"))
+      l_globIter = glob.iglob(
+         os.path.join(
+            l_normRootDir, "*.log"))
 
-         for gzfn in l_secGi:
-            l_m = re.match(filefmt.SrmLogGzFileNameFormater(), os.path.basename(gzfn))
-            if l_m is not None:
-               this.secGzFiles.append(gzfn)
+      for logfn in l_globIter:
+         l_m = re.match(filefmt.SrmLogFileNameFormater(), os.path.basename(logfn))
+         if l_m is not None:
+            l_logFiles.append(logfn)
 
-         if this.secGzFiles.__len__() == 0:
-            this.secGzFiles = None
+      if l_logFiles.__len__() == 0:
+         l_logFiles = None
+      else:
+         l_logFiles.sort()
 
-            l_secLi = glob.iglob(
-               os.path.join(
-                  this.secDir, "*.log"))
+      this.GenSingleFile(l_normRootDir, l_gzFiles, l_logFiles)
 
-            for logfn in l_secLi:
-               l_m = re.match(filefmt.SrmLogFileNameFormater(), os.path.basename(logfn))
-               if l_m is not None:
-                  this.secLogFiles.append(logfn)
+   def CheckBigFile(this, a_rootDir):
+      """
+      Return True is new file need to be generated , else no.
+      """
+      if this.timeFlag == 0 or this.timeFlag < 0:
+         return True
 
-            print(this.secLogFiles)
+      try:
+         """
+         Compare file time with current time against this.timeFlag
+         """
+         l_bigFileLocation = os.path.join(a_rootDir, filefmt.OneBigLogFileName())
+         l_bigFileMTime = os.path.getmtime(l_bigFileLocation)
+         l_currentTime = time.time()
 
-            if this.secLogFiles.__len__() == 0:
-               this.secDir = None
-               this.secLogFiles = None
+         if datetime.timedelta(
+            seconds=(l_currentTime - l_bigFileMTime)).days > this.timeFlag:
+            return True
          else:
-            this.secLogFiles = None
+            return False
+      except OSError:
+         return True
 
-   def GzThread(this, a_dirName, a_gzlist):
-      import zipper
-      l_unzipper = zipper.Unzipper()
-      with open(os.path.join(a_dirName, filefmt.OneBigLogFileName()), "w") as fh:
-         for fn in a_gzlist:
-            l_unzipper.Decompress(fn, fh)
+   def GenSingleFile(this, a_rootDir, a_gzFiles, a_logFiles):
+      if a_gzFiles is not None:
 
-   def LogThread(this, a_dirName, a_loglist):
-      import logger
-      l_logger = logger.ConcatLog()
-      with open(os.path.join(a_dirName, filefmt.OneBigLogFileName()), "w") as fh:
-         for fn in a_loglist:
-            l_logger.TakeFile(fn, fh)
+         if this.CheckBigFile(a_rootDir):
+            import zipper
+            l_unzipper = zipper.Unzipper()
 
-   def GenSingleFile(this):
-      l_firstDir = None
-      l_secDir = None
+            with open(os.path.join(a_rootDir, filefmt.OneBigLogFileName()), "w") as fh:
 
-      if this.firstGzFiles is not None:
-         this.firstGzFiles.sort()  # Sort files! Important!
-         l_args = (this.firstDir, this.firstGzFiles)
-         l_firstDir = threading.Thread(target=this.GzThread, args=l_args)
-         l_firstDir.start()
-      elif this.firstLogFiles is not None:
-         this.firstLogFiles.sort()  # Sort files! Important!
-         l_args = (this.firstDir, this.firstLogFiles)
-         l_firstDir = threading.Thread(target=this.LogThread, args=l_args)
-         l_firstDir.start()
+               for fn in a_gzFiles:
+                  l_unzipper.Decompress(fn, fh)
 
-      if hasattr(this, "secDir"):
-         if this.secGzFiles is not None:
-            this.secGzFiles.sort()  # Sort files! Important!
-            l_args = (this.secDir, this.secGzFiles)
-            l_secDir = threading.Thread(target=this.GzThread, args=l_args)
-            l_secDir.start()
-         elif this.secLogFiles is not None:
-            this.secLogFiles.sort()  # Sort files! Important!
-            l_args = (this.secDir, this.secLogFiles)
-            l_secDir = threading.Thread(target=this.LogThread, args=l_args)
-            l_secDir.start()
+      elif a_logFiles is not None:
 
-      if l_secDir:
-         print("----l_secDir")
-         l_secDir.join()
-      if l_firstDir:
-         print("----l_firstDir")
-         l_firstDir.join()
+         if this.CheckBigFile(a_rootDir):
+            import logger
+            l_logger = logger.ConcatLog()
+
+            with open(os.path.join(a_rootDir, filefmt.OneBigLogFileName()), "w") as fh:
+
+               for fn in a_logFiles:
+                  l_logger.TakeFile(fn, fh)
+
+      elif this.CheckBigFile(a_rootDir):
+         raise NoFileToGenException()
