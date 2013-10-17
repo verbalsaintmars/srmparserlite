@@ -1,12 +1,14 @@
 """
-TODO 1. change lower case with instance variable
+DONE 1. change lower case with instance variable
+TODO 2. update ctx text
+TODO 3. Provide replace format!!!
 """
 __package__ = "srmparserlite.splTraits"
 
 from ..splGeneral.deco import VersionDeco
 
 
-@VersionDeco(500)  # Have class variable ClassVersion
+@VersionDeco(500)  # To have class variable __version__
 class SrmTrait(object):
    __slots__ = [
          "headerFmt",

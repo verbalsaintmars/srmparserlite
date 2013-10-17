@@ -21,19 +21,25 @@ for a in it:
    print(a)
 """
 
-class Base(object):
-  def __init__(this):
-    this.a = 10
+class Test(object):
+   __slots__ = ["a"]
+   def __init__(this):
+      pass
 
-  def getA(this):
-    return this.a
+   def fuck(this):
+      if hasattr(this, "a"):
+         print("fuck")
+      else:
+         this.a = "10"
+         print("asd")
 
-  A = property(getA)
+class DE(Test):
+   pass
 
-class Derived(Base):
-  def __init__(this):
-    super(Derived,this).__init__()
-    this.b = 20
-
-d = Derived()
-print(d.A)  # will this print?
+t = DE()
+t.b = 20
+t.fuck()
+t.fuck()
+t.fuck()
+t.fuck()
+t.fuck()

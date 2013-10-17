@@ -18,6 +18,14 @@ class HeadLineClass(object):
    def __init__(this):
       this.processedFlag = False
 
+   def __str__(this):
+      return r"Section for VMware vCenter Site Recovery Manager, pid=" \
+         + this.hlcPid \
+         + r", version=" + this.hlcVersion \
+         + r", build=build-" + this.hlcBuild \
+         + r", option=" + this.hlcOption \
+         + "\n"
+
    def setPF(this, a_pf):
       this.processedFlag = a_pf
 
@@ -60,6 +68,7 @@ class HeadLineClass(object):
 class LineClass(object):
    __slots__ = [
          "bundleFlag",
+         "matchFlag",
          "lcTime",
          "lcInfo",
          "lcType",
@@ -68,12 +77,24 @@ class LineClass(object):
 
    def __init__(this):
       this.bundleFlag = False
+      this.matchFlag = False
+
+   def __str__(this):
+      return this.lcTime + " " + this.lcInfo + " " \
+         + ("" if this.lcType is None else this.lcType) + this.lcData + \
+         ("".join(this.lcBundle) if this.bundleFlag else "\n")
 
    def setBundleFlag(this, a_flg):
       this.bundleFlag = a_flg
 
    def getBundleFlag(this):
       return this.bundleFlag
+
+   def setMatchFlag(this, a_flg):
+      this.matchFlag = a_flg
+
+   def getMatchFlag(this):
+      return this.matchFlag
 
    def setTime(this, a_time):
       this.lcTime = a_time
@@ -103,7 +124,7 @@ class LineClass(object):
       """
          Make Bundle into list for better search, instead of one long string with newline
       """
-      if hasattr(this, "lcbundle"):
+      if hasattr(this, "lcBundle"):
          this.lcBundle.append(a_bundle)
       else:
          this.setBundleFlag(True)
@@ -113,6 +134,7 @@ class LineClass(object):
       return this.lcBundle
 
    BUNDLEFLAG = property(getBundleFlag, setBundleFlag)
+   MATCHFLAG = property(getMatchFlag, setMatchFlag)
    TIME = property(getTime, setTime)
    INFO = property(getInfo, setInfo)
    TYPE = property(getType, setType)

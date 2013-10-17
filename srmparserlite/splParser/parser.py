@@ -13,6 +13,7 @@ from ..splFileManager.fm import ReadBigFile
 from ..splFileManager.filenamegen import GenResultFile
 from ..splGeneral.exceptions import NoHeaderLineException
 from ..splGeneral.exceptions import NoTraitException
+from ..splGeneral.exceptions import UnSupportFormatException
 from ..splTraits.traits import Traits
 from ..splTraits.traits import LineClasses
 
@@ -55,15 +56,44 @@ class Parser(object):
       else:
          raise NoHeaderLineException()
 
-      print(GenResultFile(this.rootDir).genFileName())
-
+      """
+      Reason that use lineobj to save it first rather filter each line directly
+      and write any line that passes filter is that
+      later on, we want to save lineobj into database
+      """
       with open(GenResultFile(this.rootDir).genFileName(), "w") as l_resultFileObj:
-         for ln in a_bigFileIter:
-            l_lineObj = this.srmLineClass.LineClass()
-            l_m = re.match(this.trait.LINEFMT, ln)
-            if l_m is not None:
+         l_resultFileObj.write(a_header)
+         l_delayLine = None
 
-            l_resultFileObj.write(ln)
+         for ln in a_bigFileIter:
+            l_m = re.match(this.trait.LINEFMT, ln)
+
+            if l_m is not None:
+               if l_delayLine is not None:
+                  l_resultFileObj.write(l_delayLine.__str__())
+               l_lineObj = this.srmLineClass.LineClass()
+               l_lineObj.TIME = l_m.group("TIME")
+               l_lineObj.INFO = l_m.group("INFO")
+               l_lineObj.TYPE = l_m.group("TYPE")
+               l_lineObj.DATA = l_m.group("DATA")
+               """
+               Apply filter set here!!
+               if found, save this l_lineObj into l_delayLine
+               When filtering, remember to convert version string to int to compare.
+               """
+               l_delayLine = l_lineObj
+
+            else:
+               l_m = re.match(this.trait.BUNDLEFMT, ln)
+
+               if l_m is not None:
+                  if l_delayLine is None:
+                     l_delayLine = this.srmLineClass.LineClass()
+                  l_delayLine.BUNDLE = ln
+
+               else:
+                  l_resultFileObj.write(ln)
+                  #raise UnSupportFormatException(ln)
 
    def GetVersion(this):
       import importlib

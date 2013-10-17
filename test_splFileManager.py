@@ -41,8 +41,10 @@ def TestSplParser():
    dirRoot = [
          r"/myfiles/Source/vsProject/srmparserlite/pplog",
          r"/myfiles/Source/vsProject/srmparserlite/sslog"]
-   pa = parser.Parser(r"/myfiles/Source/vsProject/srmparserlite/sslog")
-   pa.Start()
+   pa1 = parser.Parser(r"/myfiles/Source/vsProject/srmparserlite/sslog")
+   pa2 = parser.Parser(r"/myfiles/Source/vsProject/srmparserlite/pplog")
+   pa1.Start()
+   pa2.Start()
 
 
 if __name__ == '__main__':  # Only when run
