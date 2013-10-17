@@ -8,19 +8,17 @@ TODO 1. zip file with input filename / test it / delete original file
 __package__ = "srmparserlite.splFileManager"
 
 from ..splGeneral.deco import VersionDeco
+from ..splGeneral.exceptions import NoHeaderLineException
+from ..splGeneral.exceptions import NoTraitException
+from .traits import Traits
 import re
-
-Traits = {
-   "500": "..splTraits.srm500_t",
-   "501": "..splTraits.srm501_t",
-   "503": "..splTraits.srm503_t"}
 
 
 @VersionDeco(1)
 class GzipHandler(object):
 
    def __init__(this, a_formater):
-      this.formater = a_formater
+      this.formater = a_formater  # formater for files inside the gz file
       this.singleFileObj = None
       this.numOfFiles = 0
       this.srmTrait = None
@@ -49,11 +47,12 @@ class GzipHandler(object):
                this.singleFileObj.seek(-this.srmTrait.TRAILOFFSET, SEEK_END)
 
             else:
-               print("The version of trait : " + l_logversion + "can not be found!" )
+               print("The version of trait : " + l_logversion + "can not be found!")
+               raise NoTraitException()
 
          else:
-            print("Version can not be parsed. No content to put into single large file \
-                  for file : " + a_gzipFileObj.name)
+            print("Version can not be parsed for file : " + a_gzipFileObj.name)
+            raise NoHeaderLineException()
 
       else:
          print("Appened gz files : " + a_gzipFileObj.name)
@@ -146,6 +145,6 @@ class Unzipper(object):
 
    def Decompress(this, a_file, a_sfileObj):
       """
-         Decompress file passed in and write to passed in file object
+      Decompress file passed in and write to passed in file object
       """
       this.handler.TakeFile(a_file, a_sfileObj)

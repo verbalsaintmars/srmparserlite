@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import sys
 import re
-import threadpool
 from datetime import datetime
 from datetime import timedelta
 
@@ -66,11 +65,6 @@ Reason: (vim.fault.NoPermission) {"
 --> }"""
 
 
-def VersionDeco(a_version):
-   def TrueDeco(a_class):
-      a_class.ClassVersion = a_version
-      return a_class
-   return TrueDeco
 
 def ApplyTimeZone(a_datetime, a_timezone):
    zoneData = datetime.strptime(a_timezone[1:], "%H:%M")
@@ -104,23 +98,10 @@ else:
    pass
 
 """
-TODO: * Need a centralize version info class (format/other info such as rotated at the end
- of log)
-TODO: 1. unzip files and concat into one larg one
-TODO: 2. Read one large file line by line through SrmParser and apply filter
-TODO: 3. Filter OR mechanism
+TODO: 1. Read one large file line by line through SrmParser and apply filter
+TODO: 2. Filter OR mechanism
 
-TODO: Count number of files in each dir
-
-TODO: multithread enable 
-Thread pool
-Read and parse numbers of files parallel
-each thread == a files == one tmp_{num}.ltmp file
-
-
-TODO: concat all ltmp files into one large file
-
-TODO: 2 sites with different time.
+TODO: 3. sites with different time.
 Compare with UTC time
 e.g
 local time      12:00      9:00
@@ -131,77 +112,13 @@ User can input just hour or hour:min or hour:min:sec or hour:min:sec:microsec
 User can input only one site's time, parser will match secondary site's time
 and generate proper time section
 
-TODO: search INFO : TID OPID LOGTYPE Data Bundle
+TODO: 4. search INFO : TID OPID LOGTYPE Data Bundle
 
 """
 
 
-def HeuristicThreadFunc():
-   pass
 
 
-class NoHeaderLineException(Exception):
-   def __init__(this):
-      this.message = "No Header Line in Log file"
-
-
-class UnSupportFormatException(Exception):
-   def __init__(this, a_msg):
-      this.message = "Unsupport Format. Content : " + a_msg
-
-
-@VersionDeco(501)
-class Formater501(object):
-   __slots__ = [
-         "HeaderFmt",
-         "LineRegexFmt",
-         "TimeFmt",
-         "InfoFmt",
-         "TypeFmt",
-         "DataFmt",
-         "BundleFmt"]
-
-   def __init__(this):
-      this.HeaderFmt = r".*,\s*pid=(?P<PID>\d+),\s*version=(?P<VERSION>\d\.\d\.\d),\s*" \
-                       "build=build-(?P<BUILD>\d+),\s*option=(?P<OPTION>\w+)"
-      this.LineRegexFmt = r"(?P<TIME>.*?)\s(?P<INFO>(?:\[.*?\]\s))" \
-                          "(?P<TYPE>\[.*?\]\s)?(?P<DATA>.*)"
-      this.TimeFmt = "%Y-%m-%dT%H:%M:%S.%f"
-      # Will have other ID in it.
-      this.InfoFmt = r"\[(?P<TID>\d+)\s(?P<LOGINFO>\w+)\s\'(?P<CLASS>\w+)\'" \
-                     "\s?(?:connID=(?P<CONNID>.*?))?\s?(?:opID=(?P<OPID>.*?))?\]"
-      this.TypeFmt = r"\[(?P<TYPE>\w+)\]"
-      this.DataFmt = r""
-      this.BundleFmt = r"^-->"
-
-   def getHeaderFmt(this):
-      return this.HeaderFmt
-
-   def getLineRegexFmt(this):
-      return this.LineRegexFmt
-
-   def getTimeFmt(this):
-      return this.TimeFmt
-
-   def getInfoFmt(this):
-      return this.InfoFmt
-
-   def getTypeFmt(this):
-      return this.TypeFmt
-
-   def getDataFmt(this):
-      return this.DataFmt
-
-   def getBundleFmt(this):
-      return this.BundleFmt
-
-   HEADERFMT = property(getHeaderFmt)
-   LINEFMT = property(getLineRegexFmt)
-   TIMEFMT = property(getTimeFmt)
-   INFOFMT = property(getHeaderFmt)
-   TYPEFMT = property(getInfoFmt)
-   DATAFMT = property(getDataFmt)
-   BUNDLEFMT = property(getBundleFmt)
 
 
 @VersionDeco(1)
@@ -350,161 +267,6 @@ class HandleClass(object):
       this.Run()
 
 
-@VersionDeco(1)
-class FileHandleClass(HandleClass):
-   """
-      Filter it before write into file
-      Write to tmp_{nu}.ltmp
-      "nu" is the input file vmware-dr-4254.log's 4254
-   """
-   __slots__ = [
-         "FileName",
-         "FileNum",
-         "FileObj"]
-
-   Formater = r".*?-(?P<FNUM>\d+)\.log"
-
-   def __init__(this, a_fileName):
-      this.FileName = a_fileName
-      this.FileNum = re.match(FileHandleClass.Formater, this.FileName).group("FNUM")
-      tmpFileName = "tmp_" + this.FileNum + ".ltmp"
-      this.FileObj = open(tmpFileName, 'w')
-
-
-   def Run(this, a_inputObj):
-      """
-      TODO: 1. Filter the inputObj 2. if inputObj pass the filter, write inputObj into
-         file
-      """
-
-
-@VersionDeco(1)
-class Filter501(object):
-   """
-      Take user input search criteria and apply to HandleClass
-      TODO: Time , {TID LOGINFO CLASS CONNID OPID} {TYPE} Data Bundle
-      TODO: can do OR set
-
-   """
-
-
-#Section for VMware vCenter Site Recovery Manager, pid=2344, version=5.0.1, build=build-633117, option=Release
-@VersionDeco(501)
-class HeadLineClass501(object):
-   __slots__ = [
-         "ProcessedFlag",
-         "hlcpid",
-         "hlcversion",
-         "hlcbuild",
-         "hlcoption"]
-
-   Formater = Formater501()
-
-   def __init__(this):
-      this.ProcessedFlag = False
-
-   def setPF(this, a_pf):
-      this.ProcessedFlag = a_pf
-
-   def getPF(this):
-      return this.ProcessedFlag
-
-   def setPid(this, a_pid):
-      this.hlcpid = a_pid
-
-   def getPid(this):
-      return this.hlcpid
-
-   def setVersion(this, a_version):
-      this.hlcversion = a_version
-
-   def getVersion(this):
-      return this.hlcversion
-
-   def setBuild(this, a_build):
-      this.hlcbuild = a_build
-
-   def getBuild(this):
-      return this.hlcbuild
-
-   def setOption(this, a_option):
-      this.hlcoption = a_option
-
-   def getOption(this):
-      return this.hlcoption
-
-   PROCESSEDFLAG = property(getPF, setPF)
-   PID = property(getPid, setPid)
-   VERSION = property(getVersion, setVersion)
-   BUILD = property(getBuild, setBuild)
-   OPTION = property(getOption, setOption)
-
-
-#2013-07-23T20:30:09.705+02:00 [04116 verbose 'DatastoreGroupManager' opID=528a0d41] Processing virtual machine 'vm-6150'
-@VersionDeco(501)
-class LineClass501(object):
-   __slots__ = [
-         "BundleFlag",
-         "lctime",
-         "lcinfo",
-         "lctype",
-         "lcdata",
-         "lcbundle"]
-
-   Formater = Formater501()
-
-   def __init__(this):
-      this.BundleFlag = False
-
-   def setBundleFlag(this, a_flg):
-      this.BundleFlag = a_flg
-
-   def getBundleFlag(this):
-      return this.BundleFlag
-
-   def setTime(this, a_time):
-      this.lctime = a_time
-
-   def getTime(this):
-      return this.lctime
-
-   def setInfo(this, a_info):
-      this.lcinfo = a_info
-
-   def getInfo(this):
-      return this.lcinfo
-
-   def setType(this, a_type):
-      this.lctype = a_type
-
-   def getType(this):
-      return this.lctype
-
-   def setData(this, a_data):
-      this.lcdata = a_data
-
-   def getData(this):
-      return this.lcdata
-
-   def setBundle(this, a_bundle):
-      """
-         Make Bundle into list for better search, instead of one long string with newline
-      """
-      if hasattr(this, "lcbundle"):
-         this.lcbundle.append(a_bundle)
-      else:
-         this.setBundleFlag(True)
-         this.lcbundle = [a_bundle]
-
-   def getBundle(this):
-      return this.lcbundle
-
-   BUNDLEFLAG = property(getBundleFlag, setBundleFlag)
-   TIME = property(getTime, setTime)
-   INFO = property(getInfo, setInfo)
-   TYPE = property(getType, setType)
-   DATA = property(getData, setData)
-   BUNDLE = property(getBundle, setBundle)
 
 
 SpParameters = (LineClass501, HeadLineClass501)

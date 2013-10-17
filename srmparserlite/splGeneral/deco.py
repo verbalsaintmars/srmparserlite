@@ -1,3 +1,6 @@
+__package__ = "srmparserlite.splGeneral"
+
+
 def VersionDeco(a_version):
    def TrueDeco(a_class):
       a_class.__version__ = a_version

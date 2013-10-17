@@ -15,7 +15,29 @@ import threading
 
 
 @VersionDeco(1)
-class FileManager(object):
+class ReadBigFile(object):
+   """
+   Thread safe
+   """
+   __slots__ = ["dirRoot"]
+
+   def __init__(this, a_dirRoot):
+      this.dirRoot = a_dirRoot
+
+   def Read(this):
+      import os
+      with open(
+            os.path.join(
+               os.path.normpath(this.dirRoot),
+               filefmt.OneBigLogFileName())) as l_bfileObj:
+
+               for l_line in l_bfileObj:
+                  yield l_line
+
+
+
+@VersionDeco(1)
+class GenBigFile(object):
    __slots__ = [
          "firstDir",
          "secDir",
@@ -31,6 +53,9 @@ class FileManager(object):
       this.secLogFiles = []
 
    def ScanDir(this, a_1dir, a_2dir=None):
+      """
+      Passes in first and second dir root
+      """
       import glob
       import re
       this.firstDir = os.path.normpath(a_1dir)
@@ -42,9 +67,7 @@ class FileManager(object):
       for gzfn in l_firstGi:
          l_m = re.match(filefmt.SrmLogGzFileNameFormater(), os.path.basename(gzfn))
          if l_m is not None:
-            this.firstGzFiles.append(l_m.string)
-
-      print(this.firstGzFiles)
+            this.firstGzFiles.append(gzfn)
 
       if this.firstGzFiles.__len__() == 0:
          this.firstGzFiles = None
@@ -56,10 +79,13 @@ class FileManager(object):
          for logfn in l_firstLi:
             l_m = re.match(filefmt.SrmLogFileNameFormater(), os.path.basename(logfn))
             if l_m is not None:
-               this.firstLogFiles.append(l_m.string)
+               this.firstLogFiles.append(logfn)
+
+         print(this.firstLogFiles)
 
          if this.firstLogFiles.__len__() == 0:
             this.firstLogFiles = None
+            this.firstDir = None
       else:
          this.firstLogFiles = None
 
@@ -72,7 +98,7 @@ class FileManager(object):
          for gzfn in l_secGi:
             l_m = re.match(filefmt.SrmLogGzFileNameFormater(), os.path.basename(gzfn))
             if l_m is not None:
-               this.secGzFiles.append(l_m.string)
+               this.secGzFiles.append(gzfn)
 
          if this.secGzFiles.__len__() == 0:
             this.secGzFiles = None
@@ -84,45 +110,60 @@ class FileManager(object):
             for logfn in l_secLi:
                l_m = re.match(filefmt.SrmLogFileNameFormater(), os.path.basename(logfn))
                if l_m is not None:
-                  this.secLogFiles.append(l_m.string)
+                  this.secLogFiles.append(logfn)
+
+            print(this.secLogFiles)
 
             if this.secLogFiles.__len__() == 0:
+               this.secDir = None
                this.secLogFiles = None
          else:
             this.secLogFiles = None
 
    def GzThread(this, a_dirName, a_gzlist):
       import zipper
-      unzipper = zipper.Unzipper()
+      l_unzipper = zipper.Unzipper()
       with open(os.path.join(a_dirName, filefmt.OneBigLogFileName()), "w") as fh:
          for fn in a_gzlist:
-            unzipper.Decompress(fn, fh)
+            l_unzipper.Decompress(fn, fh)
 
    def LogThread(this, a_dirName, a_loglist):
-      pass
+      import logger
+      l_logger = logger.ConcatLog()
+      with open(os.path.join(a_dirName, filefmt.OneBigLogFileName()), "w") as fh:
+         for fn in a_loglist:
+            l_logger.TakeFile(fn, fh)
 
    def GenSingleFile(this):
       l_firstDir = None
       l_secDir = None
 
       if this.firstGzFiles is not None:
+         this.firstGzFiles.sort()  # Sort files! Important!
          l_args = (this.firstDir, this.firstGzFiles)
          l_firstDir = threading.Thread(target=this.GzThread, args=l_args)
-      else:
+         l_firstDir.start()
+      elif this.firstLogFiles is not None:
+         this.firstLogFiles.sort()  # Sort files! Important!
          l_args = (this.firstDir, this.firstLogFiles)
          l_firstDir = threading.Thread(target=this.LogThread, args=l_args)
-
-      l_firstDir.start()
+         l_firstDir.start()
 
       if hasattr(this, "secDir"):
          if this.secGzFiles is not None:
+            this.secGzFiles.sort()  # Sort files! Important!
             l_args = (this.secDir, this.secGzFiles)
             l_secDir = threading.Thread(target=this.GzThread, args=l_args)
-         else:
+            l_secDir.start()
+         elif this.secLogFiles is not None:
+            this.secLogFiles.sort()  # Sort files! Important!
             l_args = (this.secDir, this.secLogFiles)
             l_secDir = threading.Thread(target=this.LogThread, args=l_args)
-         l_secDir.start()
+            l_secDir.start()
 
       if l_secDir:
+         print("----l_secDir")
          l_secDir.join()
-      l_firstDir.join()
+      if l_firstDir:
+         print("----l_firstDir")
+         l_firstDir.join()

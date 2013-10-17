@@ -1,11 +1,9 @@
-if __name__ == "__main__" and __package__ is None:
-   __package__ = "srmLogParserLite.splLineClass"
-
-from ..splGeneral.deco import VersionDeco
-
 """
 TODO 1. __str__ for each class
 """
+__package__ = "srmparserlite.splLineClass"
+from ..splGeneral.deco import VersionDeco
+
 
 #Section for VMware vCenter Site Recovery Manager, pid=2344, version=5.0.1, build=build-633117, option=Release
 @VersionDeco(500)
@@ -120,10 +118,3 @@ class LineClass(object):
    TYPE = property(getType, setType)
    DATA = property(getData, setData)
    BUNDLE = property(getBundle, setBundle)
-
-
-def tester():
-   pass
-
-if __name__ == '__main__':  # Only when run
-   tester()

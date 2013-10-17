@@ -13,11 +13,26 @@ def TestUnzipFunc():
    for fn in v_files:
       uz.Decompress(fn, fh)
 
+
 def TestFilemanager():
-   fm = filemanager.FileManager()
-   fm.ScanDir(r"/myfiles/Source/vsProject/srmparserlite/pplog/", r"/myfiles/Source/vsProject/srmparserlite/sslog/")
+   fm = filemanager.GenBigFile()
+   fm.ScanDir(
+         r"/myfiles/Source/vsProject/srmparserlite/pplog/",
+         r"/myfiles/Source/vsProject/srmparserlite/sslog/")
    fm.GenSingleFile()
+
+   fm2 = filemanager.GenBigFile()
+   fm2.ScanDir(r"/myfiles/Source/vsProject/srmparserlite/pplog/")
+   fm2.GenSingleFile()
+
+
+def TestReadBigFile():
+   rb = filemanager.ReadBigFile(r"/myfiles/Source/vsProject/srmparserlite/pplog/")
+   for fl in rb.Read():
+      print(fl)
 
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()
    TestFilemanager()
+#   TestReadBigFile()
+
