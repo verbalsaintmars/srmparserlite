@@ -80,7 +80,7 @@ class LineClass(object):
       this.matchFlag = False
 
    def __str__(this):
-      return this.lcTime + " " + this.lcInfo + " " \
+      return this.lcTime + " " + this.lcInfo \
          + ("" if this.lcType is None else this.lcType) + this.lcData + \
          ("".join(this.lcBundle) if this.bundleFlag else "\n")
 

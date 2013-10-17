@@ -1,4 +1,4 @@
-__package__ = "srmparserlite.splGeneral"
+__package__ = "srmparserlite.splFilter"
 
 
 def VersionDeco(a_version):

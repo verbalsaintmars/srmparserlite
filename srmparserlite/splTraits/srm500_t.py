@@ -26,8 +26,13 @@ class SrmTrait(object):
                           "(?P<TYPE>\[.*?\]\s)?(?P<DATA>.*)"
       this.timeFmt = "%Y-%m-%dT%H:%M:%S.%f"
       # Will have other ID in it.
-      this.infoFmt = r"\[(?P<TID>\d+)\s(?P<LOGINFO>\w+)\s\'(?P<CLASS>\w+)\'" \
-                     "\s?(?:connID=(?P<CONNID>.*?))?\s?(?:opID=(?P<OPID>.*?))?\]"
+      this.infoFmt = r"\[" \
+                     r"(?P<TID>\d+)\s" \
+                     r"(?P<LOGINFO>\w+)\s" \
+                     r"\'(?P<CLASS>\w+)\'\s" \
+                     r"(?:connID=(?P<CONNID>.*?))?\s" \
+                     r"(?:ctxID=(?P<CTXID>.*?))?\s" \
+                     r"(?:opID=(?P<OPID>.*?))?\]"
       this.typeFmt = r"\[(?P<TYPE>\w+)\]"
       this.dataFmt = r""
       this.bundleFmt = r"^-->"
