@@ -1,14 +1,10 @@
 r"""
-TODO 1. use fm to read one big file
-TODO 2. if no criteria input from user, parser will based on firstdir's onebig file's
-   start time and use it as the filter requirement for the second dir.
-TODO 3. need srmparserlite.splFilter component
-TODO 4. write into splresult{nu}.log files
-
+DONE 1. use fm to read one big file
+DONE 2. write into splresult_{nu}.log files
 """
 __package__ = "srmparserlite.splParser"
 
-import re
+from ..splGeneral.deco import VersionDeco
 from ..splFileManager.fm import ReadBigFile
 from ..splFileManager.filenamegen import GenResultFile
 from ..splGeneral.exceptions import NoHeaderLineException
@@ -16,8 +12,10 @@ from ..splGeneral.exceptions import NoTraitException
 from ..splGeneral.exceptions import UnSupportFormatException
 from ..splTraits.traits import Traits
 from ..splTraits.traits import LineClasses
+import re
 
 
+@VersionDeco(1)
 class Parser(object):
    """
    thread safe

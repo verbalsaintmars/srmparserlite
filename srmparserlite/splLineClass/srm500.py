@@ -1,5 +1,5 @@
 """
-TODO 1. __str__ for each class
+DONE 1. __str__ for each class
 """
 __package__ = "srmparserlite.splLineClass"
 from ..splGeneral.deco import VersionDeco

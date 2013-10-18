@@ -24,7 +24,9 @@ class SrmTrait(object):
                        "build=build-(?P<BUILD>\d+),\s*option=(?P<OPTION>\w+)"
       this.lineRegexFmt = r"(?P<TIME>.*?)\s(?P<INFO>(?:\[.*?\]\s))" \
                           "(?P<TYPE>\[.*?\]\s)?(?P<DATA>.*)"
-      this.timeFmt = "%Y-%m-%dT%H:%M:%S.%f"
+      this.timeFmt = {
+         "Format": "%Y-%m-%dT%H:%M:%S.%f",
+         "TimeZoneOffSet": -6}
       # Will have other ID in it.
       this.infoFmt = r"\[" \
                      r"(?P<TID>\d+)\s" \
