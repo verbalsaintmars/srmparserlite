@@ -1,6 +1,6 @@
 import datetime
 
-v_testTime1 = "2014-07-05T14:26:15.182-02:00"  # minimum to seconds
+v_testTime1 = "2014-07-05T14:26:15.182-08:00"  # minimum to seconds
 v_testTime2 = "2014-07-05T14:26:15.182-05:00"  # minimum to seconds
 MilliFormat = "%Y-%m-%dT%H:%M:%S.%f"
 SecFormat = "%Y-%m-%dT%H:%M:%S"
@@ -40,24 +40,35 @@ def ApplyTimeZone(a_datetime, a_timezone):
    else:
       return a_datetime + timeDiff
 
-print (ApplyTimeZone(srm_datetime1, srm_timezone1))
+
+from datetime import tzinfo
+from datetime import datetime
+from datetime import timedelta
 
 
-tmp1 = ApplyTimeZone(srm_datetime1, srm_timezone1)
-tmp2 = ApplyTimeZone(srm_datetime2, srm_timezone2)
+class TimeZone(tzinfo):
+   __slots__ = ["timeDelta"]
 
-com1 = datetime.datetime(year=tmp1.year, month=tmp1.month, day=tmp1.day)
-com2 = datetime.datetime(year=tmp2.year, month=tmp2.month, day=tmp2.day)
-print(com1 > com2)
+   def __init__(this, a_offsetStr):
+      super(tzinfo, this).__init__()
+      zoneData = datetime.strptime(a_offsetStr[1:], "%H:%M")
 
-print("-----------")
+      if (a_offsetStr[0] == "+"):
+         this.timeDelta = timedelta(hours=zoneData.hour, minutes=zoneData.minute)
 
+      else:
+         this.timeDelta = -timedelta(hours=zoneData.hour, minutes=zoneData.minute)
 
-class TEST(object):
-   TMP = 10
+   def utcoffset(this, dt):
+      return this.timeDelta
 
-   @staticmethod
-   def HA():
-      print(TEST.TMP)
+   def dst(self, dt):
+      return timedelta(0)
 
-TEST.HA()
+tz1 = TimeZone(srm_timezone1)
+tz2 = TimeZone(srm_timezone2)
+
+srm_datetime1 = srm_datetime1.replace(tzinfo=tz1)
+srm_datetime2 = srm_datetime2.replace(tzinfo=tz2)
+
+print(srm_datetime1 > srm_datetime2)

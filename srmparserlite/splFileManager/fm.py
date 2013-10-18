@@ -3,7 +3,7 @@ DONE: 1. scan given directories for files , 1 primary, 1 secondary / provide fil
 DONE: 2. If contains zipped file, unzip it into one large file, if the large file exist,
          skip unzipping, skip checking .log files, always unzip gz files first
 DONE: 3. If contains .log files, concat it into one large file
-TODO: 4. time in the spl will be compare as epoch utc time in seconds
+DONE: 4. time in the spl will be compare as epoch utc time in seconds
 """
 __package__ = "srmparserlite.splFileManager"
 

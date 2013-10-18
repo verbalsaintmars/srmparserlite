@@ -1,0 +1,56 @@
+"""
+Time {"TimeStr" : "2013-07-05T14:26:15.182-02:00",
+      "FilterFlag" : "year,month, day,hour,min,sec, milli"}
+
+"""
+
+Time1 = {
+   "start": "2013-07-05T14:26:15.182-02:00",
+   "end": "2013-07-05T14:28:15.182-02:00",
+   "flag": "milli"}
+
+Info1 = {}
+
+Type1 = {}
+
+Data1 = ()
+
+Bundle1 = ()
+
+Time2 = {
+   "start": "2013-07-05T14:26:15.182-02:00",
+   "end": "2013-07-05T14:28:15.182-02:00",
+   "flag": "milli"}
+
+Info2 = {}
+
+Type2 = {}
+
+Data2 = ()
+
+Bundle2 = ()
+
+site1cond = {
+      "time": Time1,
+      "info": Info1,
+      "type": Type1,
+      "data": Data1,
+      "bundle": Bundle1}
+
+site2cond = {
+      "time": Time2,
+      "info": Info2,
+      "type": Type2,
+      "data": Data2,
+      "bundle": Bundle2}
+
+Site1 = {
+      "dir": r"/myfiles/Source/vsProject/srmparserlite/pplog/",
+      "condition": site1cond}
+
+
+Site2 = {
+      "dir": r"/myfiles/Source/vsProject/srmparserlite/sslog/",
+      "condition": site2cond}
+
+Sites = (Site1, Site2)

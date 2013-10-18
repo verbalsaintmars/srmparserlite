@@ -3,7 +3,6 @@ DONE 1. read files in dir/sorted
 DONE 2. intrusive test file name inside if match format "vmware-dr-4245.log"
 DONE 3. If there is _a_ match in file format, unzip the whole gz file
 DONE 4. zip file with input filename / test it / delete original file
-TODO 1. zip file with input filename / test it / delete original file
 """
 __package__ = "srmparserlite.splFileManager"
 

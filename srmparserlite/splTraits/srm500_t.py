@@ -1,7 +1,6 @@
 """
 DONE 1. change lower case with instance variable
-TODO 2. update ctx text
-TODO 3. Provide replace format!!!
+DONE 2. update ctx text
 """
 __package__ = "srmparserlite.splTraits"
 
@@ -26,7 +25,7 @@ class SrmTrait(object):
                           "(?P<TYPE>\[.*?\]\s)?(?P<DATA>.*)"
       this.timeFmt = {
          "Format": "%Y-%m-%dT%H:%M:%S.%f",
-         "TimeZoneOffSet": -6}
+         "TimeZoneOffSet": -6}  # for capturing the utc timezone data
       # Will have other ID in it.
       this.infoFmt = r"\[" \
                      r"(?P<TID>\d+)\s" \

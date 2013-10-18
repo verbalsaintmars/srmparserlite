@@ -2,6 +2,7 @@ import srmparserlite.splFileManager.zipper as zipper
 import srmparserlite.splFileManager.fm as filemanager
 import srmparserlite.splFileManager.filenamegen as genfile
 import srmparserlite.splParser.parser as parser
+import srmparserlite.splFilter.filterr as filterr
 
 
 def TestUnzipFunc():
@@ -46,9 +47,15 @@ def TestSplParser():
    pa2.Start()
 
 
+def TestSplFilter():
+   ft = filterr.TimeFilter("501", r"2014-07-05T14:26:15.182-08:00", "year")
+   print(ft.ApplyLess(r"2014-08-06T15:27:16.183-08:00"))
+
+
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()
-   TestFilemanager()
+   #TestFilemanager()
    #TestReadBigFile()
    #TestSplParser()
    #TestGenFile()
+   TestSplFilter()

@@ -36,6 +36,10 @@ class Parser(object):
    def Start(this):
       this.Parsing(*this.GetVersion())
 
+   def PrepareConfig(this):
+      pass
+
+
    def Parsing(this, a_header, a_bigFileIter):
       l_headlineObj = this.srmLineClass.HeadLineClass()
       l_m = re.match(this.trait.HEADERFMT, a_header)
