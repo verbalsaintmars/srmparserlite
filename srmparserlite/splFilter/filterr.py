@@ -156,7 +156,7 @@ class TimeFilter(object):
       l_dateTime = l_dateTime.replace(tzinfo=TimeZone(l_timezone))
       l_dateTime = TimeFilterMap[this.filterFlag](l_dateTime)
 
-      return this.dateTime < l_dateTime
+      return this.dateTime <= l_dateTime
 
 
 class InfoFilter(object):

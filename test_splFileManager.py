@@ -3,6 +3,7 @@ import srmparserlite.splFileManager.fm as filemanager
 import srmparserlite.splFileManager.filenamegen as genfile
 import srmparserlite.splParser.parser as parser
 import srmparserlite.splFilter.filterr as filterr
+import srmparserlite.splGeneral.exceptions as ex
 
 
 def TestUnzipFunc():
@@ -17,11 +18,12 @@ def TestUnzipFunc():
       uz.Decompress(fn, fh)
 
 
-def TestFilemanager():
-   fm = filemanager.GenBigFile(0)  # number of days
-   dirs = (r"/myfiles/Source/vsProject/srmparserlite/pplog/",
-           r"/myfiles/Source/vsProject/srmparserlite/sslog",
-           r"/myfiles/Source/vsProject/srmparserlite/vvvog")
+def TestGenBigFile():
+   fm = filemanager.GenBigFile()  # number of days
+
+   dirs = ((r"/myfiles/Source/vsProject/srmparserlite/vvlog/", 0),
+           (r"/myfiles/Source/vsProject/srmparserlite/sslog", 1),
+           (r"/myfiles/Source/vsProject/srmparserlite/pplog/", 0))
 
    fm.Start(*dirs)
 
@@ -52,10 +54,19 @@ def TestSplFilter():
    print(ft.ApplyLess(r"2014-08-06T15:27:16.183-08:00"))
 
 
+def TestSpl():
+   import srmparserlite.spl as spl
+   import srmparserlite.splConfig.fakeconfig as fakeconfig
+   singleSite = fakeconfig.singleSite
+   doubleSite = fakeconfig.doubleSite
+   sp = spl.Start()
+   sp.Start(doubleSite)
+
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()
-   #TestFilemanager()
+   #TestGenBigFile()
    #TestReadBigFile()
    #TestSplParser()
    #TestGenFile()
-   TestSplFilter()
+   #TestSplFilter()
+   TestSpl()

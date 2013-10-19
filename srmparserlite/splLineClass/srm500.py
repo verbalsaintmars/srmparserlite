@@ -140,3 +140,17 @@ class LineClass(object):
    TYPE = property(getType, setType)
    DATA = property(getData, setData)
    BUNDLE = property(getBundle, setBundle)
+
+
+@VersionDeco(500)
+class LiteLineClass(object):
+   __slots__ = ["line", "bundle", "found"]
+
+   def __init__(this):
+      this.line = None
+      this.bundle = []
+      this.found = False
+
+   def __str__(this):
+      return this.line + \
+            ("".join(this.bundle) if this.bundle.__len__() != 0 else "")

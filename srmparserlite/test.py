@@ -72,3 +72,144 @@ srm_datetime1 = srm_datetime1.replace(tzinfo=tz1)
 srm_datetime2 = srm_datetime2.replace(tzinfo=tz2)
 
 print(srm_datetime1 > srm_datetime2)
+
+
+print("------------")
+
+Time11 = {
+   "start": "Time11",
+   "end": "2013-07-05T14:28:15.182-02:00",
+   "flag": "milli"}
+
+Time12 = {
+   "start": "Time12",
+   "end": "2013-07-05T14:28:15.182-02:00",
+   "flag": "milli"}
+
+Time21 = {
+   "start": "Time21",
+   "end": "2013-07-05T14:28:15.182-02:00",
+   "flag": "milli"}
+
+Time22 = {
+   "start": "Time22",
+   "end": "2013-07-05T14:28:15.182-02:00",
+   "flag": "milli"}
+
+Info1 = {
+   "tid": "03440",
+   "loginfo": "error",
+   "class": "EventDomain"}  # all inside is "and"
+
+# 04116 verbose 'DatastoreGroupManager' opID=528a0d41
+Info2 = {
+   "tid": "04116",
+   "loginfo": "verbose",
+   "class": "DatastoreGroupManager",
+   "opid": "528a0d41"}  # all inside is "and"
+
+Type1 = {}
+Type2 = {}
+
+Data1 = ()
+Data2 = ()
+
+Bundle1 = ()
+Bundle2 = ()
+
+"""
+site1pack1 = {
+      "time": Time,
+      "info": (Info1, Info2),  # or here
+      "type": (Type1, Type2),  # or here
+      "data": (Data1, Data2),  # or here
+      "bundle": (Bundle1, Bundle2)}  # or here
+"""
+
+site1pack11 = {
+      "time": Time11,
+      "info": (Info1, Info2)}
+
+site1pack12 = {
+      "time": Time12,
+      "info": (Info1, Info2)}
+
+site1pack21 = {
+      "time": Time21,
+      "info": (Info1, Info2)}
+
+Site1 = {
+      "dir": r"/myfiles/Source/vsProject/srmparserlite/pplog/",
+      "criteria": (site1pack11, site1pack12),
+      "type": "config",  # ignore other parameter. gen same splsync_{nu}.log on each site
+      "dayoffset": 1}  # more than 1 day will regenerate the one big file, 0 will always
+                       # generate
+
+Site2 = {
+      "dir": r"/myfiles/Source/vsProject/srmparserlite/sslog/",
+      "criteria": (site1pack21,),
+      "type": "sync",  # ignore other parameter. gen same splsync_{nu}.log on each site
+      "dayoffset": 1}  # more than 1 day will regenerate the one big file, 0 will always
+"""
+syncSite2 = {
+      "dir": r"/myfiles/Source/vsProject/srmparserlite/sslog/",
+      "condition": site1pack,
+      "type": "sync",
+      "dayoffset": 1,  # more than 1 day will regenerate
+      "forceflag": True}
+"""
+singleSite = (Site1, Site2)
+
+
+class PrepareConfig(object):
+   __slots__ = ["sites", "syncState", "syncTime"]
+
+   def __init__(this, a_sites):
+      this.sites = a_sites
+      this.syncTime = []
+      this.syncState = False
+
+   def CheckModifyState(this):
+      v_tmpConfig = None
+
+      for l_site in this.sites:
+
+         if l_site["type"] == "sync":
+
+            if this.syncState is False:
+
+               for l_criteria in l_site["criteria"]:
+                  this.syncTime.append(l_criteria["time"])
+
+               this.syncState = True
+               v_tmpConfig = l_site
+               break
+
+      if this.syncState is True:
+
+         for l_site in this.sites:
+            if l_site is v_tmpConfig:
+               continue
+            i = 0
+            for l_criteria in l_site["criteria"]:
+               try:
+                  l_criteria["time"] = this.syncTime[i]
+                  i += 1
+               except IndexError:
+                  break
+
+pp = PrepareConfig(singleSite)
+pp.CheckModifyState()
+print(singleSite[0]["criteria"][1]["time"]["start"])
+
+
+print("------------------------------")
+import multiprocessing.pool as mpo
+
+class TEST(object):
+   def __call__(this, a_in):
+      print(a_in)
+
+l_tpool = mpo.ThreadPool(processes=mpo.cpu_count())
+l_result = l_tpool.map_async(TEST(), (1,2,3), 1)
+l_result.get()

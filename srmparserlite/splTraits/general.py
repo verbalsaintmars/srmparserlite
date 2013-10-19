@@ -1,4 +1,4 @@
-__package__ = "srmparserlite.splLineClass"
+__package__ = "srmparserlite.splTraits"
 
 from ..splGeneral.deco import VersionDeco
 

@@ -25,10 +25,10 @@ class ResultFileFormater(object):
       "replaceFormat",
       "fileName"]
 
-   def __init__(this):
-      this.numFormat = r"splresult_(?P<NUM>\d+)\.log"
-      this.replaceFormat = r"(splresult)_\d+(\.log)"
-      this.fileName = "splresult_0.log"
+   def __init__(this, a_baseFileName):
+      this.numFormat = a_baseFileName.strip() + r"_(?P<NUM>\d+)\.log"
+      this.replaceFormat = r"(" + a_baseFileName.strip() + ")_\d+(\.log)"
+      this.fileName = a_baseFileName.strip() + "_0.log"
 
    def getNumFormat(this):
       return this.numFormat

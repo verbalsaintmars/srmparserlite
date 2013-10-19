@@ -12,3 +12,8 @@ class HeadLineClass(srm500.HeadLineClass):
 @VersionDeco(503)
 class LineClass(srm500.LineClass):
    pass
+
+
+@VersionDeco(503)
+class LiteLineClass(srm500.LiteLineClass):
+   pass
