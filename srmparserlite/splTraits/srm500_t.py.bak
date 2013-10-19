@@ -19,24 +19,21 @@ class SrmTrait(object):
       "bundleFmt"]
 
    def __init__(this):
-
-      this.headerFmt = \
-         r".*,\s*pid=(?P<PID>\d+),\s*version=(?P<VERSION>\d\.\d\.\d),\s*" \
-         r"build=build-(?P<BUILD>\d+),\s*option=(?P<OPTION>\w+)"
+      this.headerFmt = r".*,\s*pid=(?P<PID>\d+),\s*version=(?P<VERSION>\d\.\d\.\d),\s*" \
+                       r"build=build-(?P<BUILD>\d+),\s*option=(?P<OPTION>\w+)"
 
       this.lineRegexFmt = \
-         r"(?P<TIME>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[\+\-]" \
-         r"\d{2}:\d{2})" \
+         r"(?P<TIME>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}[\+\-]\d{2}:\d{2})" \
          r"\s" \
-         r"(?:\[(?P<INFO>(?P<TID>\d+)\s(?P<LOGINFO>\w+)\s" \
-         r"\'(?P<CLASS>\w+)\'\s?(?P<OTHERINFO>.*?))\])\s?" \
+         r"(?:\[(?P<INFO>(?P<TID>\d+)\s(?P<LOGINFO>\w+)\s\'" \
+         r"(?P<CLASS>\w+)\'\s?(?P<OTHERINFO>.*?))\])\s?" \
          r"(?:\[(?P<TYPE>.*?)\])?\s?" \
          r"(?P<DATA>.*)"
 
       this.timeFmt = {
          "Format": "%Y-%m-%dT%H:%M:%S.%f",
          "TimeZoneOffSet": -6}  # for capturing the utc timezone data
-
+      # Will have other ID in it.
       this.infoFmt = r"\[" \
                      r"(?P<TID>\d+)\s" \
                      r"(?P<LOGINFO>\w+)\s" \

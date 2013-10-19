@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 r"""
 TODO 1. read config through configpack module
-TODO 2. locate log , if can generate one big file, proceed, else, stop.
-TODO 3. after generate one big file, start to use Parser.
+DONE 2. locate log , if can generate one big file, proceed, else, stop.
+DONE 3. after generate one big file, start to use Parser.
 TODO 4. Parser will take config object and sift each line before write the result
-TODO 5. the result will be at the same directory as log files
-TODO 6. the result will have the file name format: *.spl => *_spl.log
-TODO 7. before proceed, check *_spl.log exist, if more than dayoffset day,
-   regenerate, else stop.
-TODO 8. if force generate, spl will generate anyway
-   file is generated.
+DONE 5. the result will be at the same directory as log files
+DONE 6. the result will have the file name format: *.spl => *_spl.log , now even better,
+   user could specify file name in the config
 TODO 9. user can input time criteria through command line.
    spl will generate result files syncced with time between sites under each log file
    location. file name : splsync_{nu}.log

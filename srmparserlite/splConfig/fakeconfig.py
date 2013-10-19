@@ -7,8 +7,8 @@ type : sync , config
 """
 
 Time11 = {
-   "start": "2013-07-23T21:34:35.182+02:00",
-   "end": "2013-07-23T23:26:02.837+02:00",
+   "start": "2013-07-23T20:30:09.780+02:00",
+   "end": "2013-07-23T23:26:02.931+02:00", #not included [,)
    "flag": "milli"}
 
 Time12 = {
@@ -33,7 +33,7 @@ Info1 = {
 
 # 04116 verbose 'DatastoreGroupManager' opID=528a0d41
 Info2 = {
-   "tid": "04116",
+   "tid": "03528",
    "loginfo": "verbose",
    "class": "DatastoreGroupManager",
    "opid": "528a0d41"}  # all inside is "and"
@@ -57,28 +57,33 @@ site1pack1 = {
 """
 
 site1pack11 = {
+      "name": "Site_1_pack11",
       "time": Time11,
       "info": (Info1, Info2),
       "logfilename": "my_result_pack1"}  # must end with _ , reader will take care of this
 
 site1pack12 = {
+      "name": "Site_1_pack12",
       "time": Time12,
       "info": (Info1, Info2),
       "logfilename": "my_result_pack2"}  # must end with _ , reader will take care of this
 
 site1pack21 = {
+      "name": "Site_1_pack21",
       "time": Time21,
       "info": (Info1, Info2),
       "logfilename": "your_result_pack1"}
        # must end with _ , reader will take care of this
 
 Site1 = {
+      "name": "Site_1",
       "dir": r"/myfiles/Source/vsProject/srmparserlite/pplog/",
-      "criteria": (site1pack11, site1pack12),
+      "criteria": (site1pack11,),
       "type": "config",  # ignore other parameter. gen same splsync_{nu}.log on each site
       "dayoffset": 1}
 
 Site2 = {
+      "name": "Site_2",
       "dir": r"/myfiles/Source/vsProject/srmparserlite/sslog/",
       "criteria": (site1pack21,),
       "type": "config",  # ignore other parameter. gen same splsync_{nu}.log on each site

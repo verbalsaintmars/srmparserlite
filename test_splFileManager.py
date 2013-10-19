@@ -60,7 +60,7 @@ def TestSpl():
    singleSite = fakeconfig.singleSite
    doubleSite = fakeconfig.doubleSite
    sp = spl.Start()
-   sp.Start(doubleSite)
+   sp.Start(singleSite)
 
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()

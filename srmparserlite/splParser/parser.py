@@ -10,12 +10,14 @@ from ..splFileManager.filenamegen import GenResultFile
 from ..splGeneral.exceptions import GenSrcLocation
 from ..splGeneral.exceptions import NoHeaderLineException
 from ..splGeneral.exceptions import NoTraitException
+from ..splGeneral.exceptions import ConfigTimeErrorMsg
 from ..splTraits import filefmt
 from ..splTraits.traits import Traits
 from ..splTraits.traits import LineClasses
 from ..splFilter.filterr import TimeFilter
 import re
 import os.path
+import multiprocessing.pool as mpo
 
 SrcLoc = GenSrcLocation(__package__)
 
@@ -28,24 +30,38 @@ class Parser(object):
 
 @VersionDeco(1)
 class DoParsing(object):
+   def __call__(this, a_site):
+   #l_siteCriterionTuple = [(a_site, l_criterion) for l_criterion in a_site["criteria"]]
+      a_site["dir"] = os.path.normpath(a_site["dir"])
+
+      l_siteCriterionTuple = tuple(
+         (a_site, l_criterion) for l_criterion in a_site["criteria"])
+
+      l_tpool = mpo.ThreadPool(processes=mpo.cpu_count())
+      l_result = l_tpool.map_async(this.ParseCriterion, l_siteCriterionTuple, 2)
+      l_result.get()
+
+   def ParseCriterion(this, a_siteCriterion):
+      ParsingCriterion()(a_siteCriterion)
+
+
+@VersionDeco(1)
+class ParsingCriterion(object):
    """
-   thread safe
+   thread safe , an object per criterion
    read one large file and parse it base on filters
       read line into lineObj by line. use filter against each lineObj
    write original header into headerObj into result file
    """
    __slots__ = [
-         "site",
+         "siteCriterion",
          "srmVersion",
          "srmLineClass",
          "trait"]
 
-   def __call__(this, a_site):
-      import os
-      this.site = a_site
-      this.site["dir"] = os.path.normpath(this.site["dir"])
-      for l_criteria in this.site["criteria"]:
-         this.Parsing(l_criteria, *this.GetVersion())
+   def __call__(this, a_siteCriterion):
+      this.siteCriterion = a_siteCriterion
+      this.Parsing(this.siteCriterion[1], *this.GetVersion())
 
    def Parsing(this, a_criteria, a_header, a_bigFileIter):
       """
@@ -66,7 +82,7 @@ class DoParsing(object):
       else:
          raise NoHeaderLineException(
             SrcLoc.__str__(),
-            os.path.join(this.site["dir"], filefmt.OneBigLogFileName()))
+            os.path.join(this.siteCriterion[0]["dir"], filefmt.OneBigLogFileName()))
       """
       """
       Reason that use lineobj to save it first rather filter each line directly
@@ -75,15 +91,27 @@ class DoParsing(object):
       """
       l_startTimeFilter = TimeFilter(
             this.srmVersion,
+            # strip will be removed , let reader handle this
+            a_criteria["time"]["start"].strip(),
+            a_criteria["time"]["flag"].strip())
+
+      if not l_startTimeFilter.ApplyLess(a_criteria["time"]["end"].strip()):
+         print(ConfigTimeErrorMsg(
+            this.siteCriterion[0]["name"],
+            a_criteria["name"],
             a_criteria["time"]["start"],
-            a_criteria["time"]["flag"])
+            a_criteria["time"]["end"]))
+         return
 
       l_endTimeFilter = TimeFilter(
             this.srmVersion,
-            a_criteria["time"]["end"],
-            a_criteria["time"]["flag"])
+            a_criteria["time"]["end"].strip(),
+            a_criteria["time"]["flag"].strip())
 
-      with open(GenResultFile(this.site["dir"]).genFileName(
+      l_unsupportFileName = GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
+               a_criteria["logfilename"] + "_UnsupportFormat")
+
+      with open(GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
          a_criteria["logfilename"]), "w") as l_resultFileObj:
 
          l_resultFileObj.write(a_header)
@@ -91,13 +119,16 @@ class DoParsing(object):
          l_outOfScope = False
 
          for ln in a_bigFileIter:
+            print("testing")
+            print(ln)
+            print(l_outOfScope)
             if l_outOfScope:
                break
-
             l_m = re.match(this.trait.LINEFMT, ln)
             if l_m is not None:
                if l_delayLine is not None and l_delayLine.found is True:
                   l_resultFileObj.write(l_delayLine.__str__())
+                  l_delayLine.found = False
                """
                l_lineObj = this.srmLineClass.LineClass()
                l_lineObj.TIME = l_m.group("TIME")
@@ -113,6 +144,11 @@ class DoParsing(object):
                if not l_startTimeFilter.ApplyLess(l_m.group("TIME")):
                   continue
                elif not l_endTimeFilter.ApplyLess(l_m.group("TIME")):
+                  """
+                  filter here!
+                  """
+                  print("in filter area")
+                  print(ln)
                   l_delayLine = this.srmLineClass.LiteLineClass()
                   l_delayLine.line = ln
                   if l_delayLine.bundle.__len__ != 0:
@@ -140,19 +176,28 @@ class DoParsing(object):
                   elif l_delayLine.found is True:
                      l_delayLine.bundle.append(ln)
 
+                  elif l_delayLine.bundle.__len__ != 0:
+                     l_resultFileObj.write(ln)
+
                else:
-                  with open(GenResultFile(this.site["dir"]).genFileName(
-                     a_criteria["logfilename"] + "_UnsupportFormat"), "w") \
-                        as l_unsupportFileObj:
+                  # flush previous found l_delayLine
+                  if l_delayLine.found:
+                     l_resultFileObj.write(l_delayLine.__str__())
+                     l_delayLine.found = False
+
+                  with open(l_unsupportFileName, "a+") as l_unsupportFileObj:
                      l_unsupportFileObj.write(ln)
                   #raise UnSupportFormatException(ln)
+
+         if l_delayLine is not None and l_delayLine.found is True:
+            l_resultFileObj.write(l_delayLine.__str__())
 
    def GetVersion(this):
       import importlib
       from ..splTraits.general import VersionFmt
 
       l_ver = VersionFmt()
-      l_rb = ReadBigFile(this.site["dir"])
+      l_rb = ReadBigFile(this.siteCriterion[0]["dir"])
       l_iter = l_rb.Read()
       l_header = next(l_iter)
       l_m = re.match(l_ver.VERSIONFMT, l_header)
@@ -183,6 +228,6 @@ class DoParsing(object):
       else:
          raise NoHeaderLineException(
             SrcLoc.__str__(),
-            os.path.join(this.site["dir"], filefmt.OneBigLogFileName()))
+            os.path.join(this.siteCriterion[0]["dir"], filefmt.OneBigLogFileName()))
 
       return (l_header, l_iter)
