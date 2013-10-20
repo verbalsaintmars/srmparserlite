@@ -147,7 +147,7 @@ class LiteLineClass(object):
    __slots__ = ["line", "bundle", "found"]
 
    def __init__(this):
-      this.line = None
+      this.line = ""
       this.bundle = []
       this.found = False
 

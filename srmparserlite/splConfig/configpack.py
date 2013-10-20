@@ -10,6 +10,25 @@ TODO: 4. generate *_spl.log result. if *_spl.log result exist, skip. If force, w
    overwrite the existing *_spl.log files
 """
 
+#def TestOutScope(this, a_criteria, a_ln):
+#  l_startTimeFilter = TimeFilter(
+#        this.srmVersion,
+#        # strip will be removed , let reader handle this
+#        a_criteria["time"]["start"].strip(),
+#        a_criteria["time"]["flag"].strip())
+#
+#  if not l_startTimeFilter.ApplyLess(a_criteria["time"]["end"].strip()):
+#     print(ConfigTimeErrorMsg(
+#        this.siteCriterion[0]["name"],
+#        a_criteria["name"],
+#        a_criteria["time"]["start"],
+#        a_criteria["time"]["end"]))
+#     return
+#
+#  l_endTimeFilter = TimeFilter(
+#        this.srmVersion,
+#        a_criteria["time"]["end"].strip(),
+#        a_criteria["time"]["flag"].strip())
 
 class PrepareConfig(object):
    __slots__ = ["sites", "syncState", "syncTime"]

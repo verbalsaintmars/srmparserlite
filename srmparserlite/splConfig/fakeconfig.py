@@ -26,40 +26,39 @@ Time22 = {
    "end": "2013-07-05T14:28:15.182-02:00",
    "flag": "milli"}
 
-Info1 = {
-   "tid": "03440",
-   "loginfo": "error",
-   "class": "EventDomain"}  # all inside is "and"
+Info1 = ("03440", "error", "EventDomain")
 
 # 04116 verbose 'DatastoreGroupManager' opID=528a0d41
-Info2 = {
-   "tid": "03528",
-   "loginfo": "verbose",
-   "class": "DatastoreGroupManager",
-   "opid": "528a0d41"}  # all inside is "and"
+Info2 = ("verbose",)
 
-Type1 = {}
-Type2 = {}
+Type1 = ("PCM",)
+Type2 = ("HAH",)
 
-Data1 = ()
-Data2 = ()
+Data1 = ("vm-6152",)
+Data2 = ("vm-6150",)
 
-Bundle1 = ()
-Bundle2 = ()
+Bundle1 = ("vm-4005",)
+Bundle2 = ("vm-2614",)
 
 """
-site1pack1 = {
-      "time": Time,
-      "info": (Info1, Info2),  # or here
+site1pack11 = {
+      "name": "Site_1_pack11",
+      "time": Time11,
+      "info": (Info1, Info2),  # inside info it's OR , between info/type/data/bundle is
+                               # AND
       "type": (Type1, Type2),  # or here
       "data": (Data1, Data2),  # or here
-      "bundle": (Bundle1, Bundle2)}  # or here
+      "bundle": (Bundle1, Bundle2),  # or here
+      "logfilename": "my_result_pack1"}  # must end with _ , reader will take care of this
 """
 
 site1pack11 = {
       "name": "Site_1_pack11",
       "time": Time11,
       "info": (Info1, Info2),
+      "type": (Type1, Type2),  # or here
+      "data": (),  # or here
+      "bundle": (Bundle1, Bundle2),  # or here
       "logfilename": "my_result_pack1"}  # must end with _ , reader will take care of this
 
 site1pack12 = {
