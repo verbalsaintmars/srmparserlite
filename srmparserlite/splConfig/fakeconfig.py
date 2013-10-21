@@ -10,7 +10,7 @@ Time12 = {
    "end": "2013-07-23T23:26:02.837+02:00",
    "flag": "milli"}
 
-Info1 = ("error",)  # it's an AND search
+Info1 = ("03528", "error",)  # it's an AND search
 
 # 04116 verbose 'DatastoreGroupManager' opID=528a0d41
 Info2 = ("04300",)
@@ -18,38 +18,45 @@ Info2 = ("04300",)
 Type1 = ("XXX",)
 Type2 = ("PCM",)
 
-Data1 = ("vm-6152",)
+Data1 = ("com.vmware.vcDr.ProtectedVmRemovedEvent",)
 Data2 = ("vm-6150",)
 
 Bundle1 = ("fuck2",)
-Bundle2 = ("vm-2614",)
+Bundle2 = ("System.Read",)
 
 
 # Criterion inside time, info, type, data, bundle is OR
 # time & info & type & data & bundle is AND
 site1pack11 = {
       "name": "Site_1_pack11",
-      "time": Time11,
-      "info": (Info2, Info1),  # or inside 'info'
+      "time": Time12,
+      "info": (),  # or inside 'info'
       "type": (),  # or insude 'type'
-      "data": (),  # or here
-      "bundle": (),  # or here
-      "logfilename": "my_result_pack1"}  # must end with _ , reader will take care of this
+      "data": (Data1,),  # or here
+      "bundle": (Bundle2,),  # or here
+      "logfilename": "HA_result_pack1"}  # must end with _ , reader will take care of this
 
 site1pack12 = {
       "name": "Site_1_pack12",
       "time": Time12,
       "info": (),  # or inside 'info'
       "type": (),  # or insude 'type'
-      "data": (),  # or here
-      "bundle": (Bundle1,),  # or here
+      "data": (Data1,),  # or here
+      "bundle": (Bundle2,),  # or here
       "logfilename": "my_result_pack2"}  # must end with _ , reader will take care of this
 
 
 Site1 = {
       "name": "Site_1",
       "dir": r"/myfiles/Source/vsProject/srmparserlite/pplog/",
-      "criteria": (site1pack12,),
+      "criteria": (site1pack12, site1pack11),
+      "type": "config",  # ignore other parameter. gen same splsync_{nu}.log on each site
+      "dayoffset": 1}
+
+Site2 = {
+      "name": "Site_2",
+      "dir": r"/myfiles/Source/vsProject/srmparserlite/sslog/",
+      "criteria": (site1pack12, site1pack11),
       "type": "config",  # ignore other parameter. gen same splsync_{nu}.log on each site
       "dayoffset": 1}
 
@@ -62,4 +69,4 @@ syncSite2 = {
       "forceflag": True}
 """
 singleSite = (Site1,)
-#doubleSite = (Site2, Site1)
+doubleSite = (Site2, Site1)
