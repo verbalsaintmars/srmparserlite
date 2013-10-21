@@ -58,7 +58,7 @@ def TestSpl():
    import srmparserlite.spl as spl
    import srmparserlite.splConfig.fakeconfig as fakeconfig
    singleSite = fakeconfig.singleSite
-   doubleSite = fakeconfig.doubleSite
+   #doubleSite = fakeconfig.doubleSite
    sp = spl.Start()
    sp.Start(singleSite)
 

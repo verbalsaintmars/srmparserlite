@@ -31,13 +31,25 @@ class Parser(object):
 @VersionDeco(1)
 class DoParsing(object):
    def __call__(this, a_site):
-   #l_siteCriterionTuple = [(a_site, l_criterion) for l_criterion in a_site["criteria"]]
+      """
+      a_site =>
+      Site1 = {
+         "name": "Site_1",
+         "dir": r"/myfiles/Source/vsProject/srmparserlite/pplog/",
+         "criteria": (site1pack11,),
+         "type": "config",  # ignore other parameter. gen same
+         splsync_{nu}.log on each site
+         "dayoffset": 1}
+      """
       a_site["dir"] = os.path.normpath(a_site["dir"])
 
       l_siteCriterionTuple = tuple(
          (a_site, l_criterion) for l_criterion in a_site["criteria"])
 
       l_tpool = mpo.ThreadPool(processes=mpo.cpu_count())
+      """
+      l_siteCriterionTuple => ((a_site, site1pack11),(a_site, site1pack12))
+      """
       l_result = l_tpool.map_async(this.ParseCriterion, l_siteCriterionTuple, 2)
       l_result.get()
 
@@ -63,140 +75,74 @@ class ParsingCriterion(object):
       this.siteCriterion = a_siteCriterion
       this.Parsing(this.siteCriterion[1], *this.GetVersion())
 
-   def TestLine(this, a_criteria, a_ln):
+   def TestLineKind(this, a_m, a_ln, a_kind):
+      l_criterion = this.siteCriterion[1]
+      l_singleFlag = False
 
-      l_m = re.match(this.trait.LINEFMT, a_ln)
-      if l_m is not None:
-         l_delayLine.line = ln
-
-         if l_delayLine.found:
-            l_resultFileObj.write(l_delayLine.__str__())
-            l_delayLine.found = False
-            if l_delayLine.bundle.__len__() != 0:
-               del l_delayLine.bundle[0:len(l_delayLine.bundle)]
-         """
-         l_lineObj = this.srmLineClass.LineClass()
-         l_lineObj.TIME = l_m.group("TIME")
-         l_lineObj.INFO = l_m.group("INFO")
-         l_lineObj.TYPE = l_m.group("TYPE")
-         l_lineObj.DATA = l_m.group("DATA")
-         """
-
-         """
-         Apply filter. If match, save the line, else pass
-         """
-
-         if not l_startTimeFilter.ApplyLess(l_m.group("TIME")):
-            continue
-         elif not l_endTimeFilter.ApplyLess(l_m.group("TIME")):
-            """
-            filter here!
-            could use only one flag bit but it's obscure.... it's python, not c++
-            :-)
-            """
-            l_foundFlag = False
-            l_localFlag = False
-
-            if a_criteria["info"].__len__() == 0:
-               l_localFlag = True
-
+      #(type1, type2) is OR
+      #type1's ("PCM", "XXXX") is AND
+      for l_kind in l_criterion[a_kind]:
+         if l_singleFlag:
+            break
+         for l_kindc in l_kind:
+            if re.search(l_kindc, a_m.group(a_kind.upper()), re.I) is None:
+               l_singleFlag = False
+               break
             else:
-               l_localFlag = False
+               l_singleFlag = True
 
-            for l_info in a_criteria["info"]:
+      return l_singleFlag
 
-               if l_localFlag:
-                  break
+   def TestBundle(this, a_m, a_ln):
+      l_criterion = this.siteCriterion[1]
+      l_found = False
 
-               for l_infoc in l_info:
+      if l_criterion["bundle"].__len__() == 0:
+         l_found = True
+      else:
+         l_found = this.TestLineKind(a_m, a_ln, "bundle")
 
-                  if re.search(l_infoc, l_m.group("INFO"), re.I) is not None:
-                     l_localFlag = True
-                     break
+      return l_found
 
-            l_foundFlag = l_localFlag
+   def TestLine(this, a_m, a_ln):
+      l_criterion = this.siteCriterion[1]
 
-            print("ha")
-            print(ln)
-            if l_foundFlag:
+      l_found = False
 
-               if l_m.group("TYPE") is None or a_criteria["type"].__len__() == 0:
-                  l_localFlag = True
+      # Test info criteria
+      if l_criterion["info"].__len__() == 0:
+         l_found = True
+      else:
+         l_found = this.TestLineKind(a_m, a_ln, "info")
 
-               else:
-                  l_localFlag = False
-
-               for l_type in a_criteria["type"]:
-
-                  if l_localFlag:
-                     break
-
-                  for l_typec in l_type:
-
-                     if re.search(l_typec, l_m.group("TYPE"), re.I) is not None:
-                        l_localFlag = True
-                        break
-
-               l_foundFlag = l_localFlag
-
-            if l_foundFlag:
-
-               if a_criteria["data"].__len__() == 0:
-                  l_localFlag = True
-
-               else:
-                  l_localFlag = False
-
-               for l_data in a_criteria["data"]:
-
-                  if l_localFlag:
-                     break
-
-                  for l_datac in l_data:
-
-                     if re.search(l_datac, l_m.group("DATA"), re.I) is not None:
-                        l_localFlag = True
-                        break
-
-               l_foundFlag = l_localFlag
-
-            print("in filter area")
-            if l_foundFlag:
-               print("ha2")
-               print(ln)
-
-               l_delayLine.found = True
-               continue
+      if l_found:
+         if l_criterion["type"].__len__() == 0:
+            l_found = True
+         elif a_m.group("TYPE") is None:
+            l_found = False
          else:
-            l_outOfScope = True
-            continue
+            l_found = this.TestLineKind(a_m, a_ln, "type")
+
+      if l_found:
+         if l_criterion["data"].__len__() == 0:
+            l_found = True
+         else:
+            l_found = this.TestLineKind(a_m, a_ln, "data")
+
+      return l_found
 
    def Parsing(this, a_criteria, a_header, a_bigFileIter):
-      """
-      l_headlineObj = this.srmLineClass.HeadLineClass()
-      l_m = re.match(this.trait.HEADERFMT, a_header)
 
-      if l_m is not None:
-         l_headlineObj.PROCESSEDFLAG = True
-         l_headlineObj.PID = l_m.group("PID")
-         l_headlineObj.VERSION = l_m.group("VERSION")
-         l_headlineObj.BUILD = l_m.group("BUILD")
-         l_headlineObj.OPTION = l_m.group("OPTION")
-         print(l_headlineObj.PID)
-         print(l_headlineObj.VERSION)
-         print(l_headlineObj.BUILD)
-         print(l_headlineObj.OPTION)
+      l_startTimeFilter = TimeFilter(
+         this.srmVersion,
+         # strip will be removed , let reader handle this
+         a_criteria["time"]["start"].strip(),
+         a_criteria["time"]["flag"].strip())
 
-      else:
-         raise NoHeaderLineException(
-            SrcLoc.__str__(),
-            os.path.join(this.siteCriterion[0]["dir"], filefmt.OneBigLogFileName()))
-      """
-      """
-      Reason that use lineobj to save it first rather filter each line directly
-      and write any line that passes filter is that
-      later on, we want to save lineobj into database
-      """
+      l_endTimeFilter = TimeFilter(
+           this.srmVersion,
+           a_criteria["time"]["end"].strip(),
+           a_criteria["time"]["flag"].strip())
 
       l_unsupportFileName = GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
                a_criteria["logfilename"] + "_UnsupportFormat")
@@ -207,76 +153,58 @@ class ParsingCriterion(object):
 
          l_resultFileObj.write(a_header)
 
-         l_outOfScope = False
          l_delayLine = this.srmLineClass.LiteLineClass()
 
          for ln in a_bigFileIter:
 
-            if l_outOfScope:
-               break
+            l_m = re.match(this.trait.LINEFMT, ln)
 
+            if l_m is not None:
 
-            elif a_criteria["bundle"].__len__() != 0:
-
-               l_m = re.match(this.trait.BUNDLEFMT, ln)
-
-               if l_m is not None:
-                  """
-                  apply filter, if match, save, else , skip
-                  """
-                  print("ha4")
-                  print(l_delayLine)
-                  print(ln)
-                  l_foundFlag = False
-                  l_localFlag = False
-
-                  if l_delayLine.found:
-
-                     for l_bundle in a_criteria["bundle"]:
-                        if l_localFlag:
-                           break
-                        for l_bundlec in l_bundle:
-                           if re.search(l_bundlec, ln, re.I) is not None:
-                              l_localFlag = True
-                              break
-
-                     l_foundFlag = l_localFlag
-                     if l_foundFlag:
-                        l_delayLine.bundle.append(ln)
-                        continue
-                     else:
-                        l_delayLine.found = False
-                        continue
-                  elif l_delayLine.line == "":
-
-                     for l_bundle in a_criteria["bundle"]:
-                        if l_localFlag:
-                           break
-                        for l_bundlec in l_bundle:
-                           if re.search(l_bundlec, ln, re.I) is not None:
-                              l_localFlag = True
-                              break
-
-                     l_foundFlag = l_localFlag
-                     if l_foundFlag:
-                        l_delayLine.bundle.append(ln)
-                        l_delayLine.found = True
-                        continue
-
-               else:
-                  # flush previous found l_delayLine
-                  if l_delayLine.found:
+               if l_delayLine.found:
+                  if l_delayLine.bundle.__len__() == 0 and \
+                     a_criteria["bundle"].__len__() == 0:
                      l_resultFileObj.write(l_delayLine.__str__())
-                     l_delayLine.found = False
+                  elif l_delayLine.bundleFlag:
+                     l_resultFileObj.write(l_delayLine.__str__())
 
-                  if l_unsupportFileObj is not None:
-                     l_unsupportFileObj.write(ln)
-                  else:
-                     l_unsupportFileObj = open(l_unsupportFileName, "a+")
-                     l_unsupportFileObj.write(ln)
-                  #raise UnSupportFormatException(ln)
+                  del l_delayLine.bundle[:]
+                  l_delayLine.found = False
+                  l_delayLine.bundleFlag = False
 
-         if l_delayLine is not None and l_delayLine.found is True:
+               if not l_startTimeFilter.ApplyLessEq(l_m.group("TIME")):
+                  l_delayLine.line = "default"
+                  continue
+               elif not l_endTimeFilter.ApplyLessEq(l_m.group("TIME")):
+                  if this.TestLine(l_m, ln):
+                     l_delayLine.line = ln
+                     l_delayLine.found = True
+                  continue
+               else:
+                  break
+
+            l_m = re.match(this.trait.BUNDLEFMT, ln)
+            if l_m is not None:
+               if l_delayLine.found:
+                  if this.TestBundle(l_m, ln):
+                     l_delayLine.bundleFlag = True
+
+                  l_delayLine.bundle.append(ln)
+
+               elif l_delayLine.line == "":
+                  if this.TestBundle(l_m, ln):
+                     l_delayLine.bundle.append(ln)
+                     l_delayLine.bundleFlag = True
+                     l_delayLine.found = True
+
+            else:
+               if l_unsupportFileObj is not None:
+                  l_unsupportFileObj.write(ln)
+               else:
+                  l_unsupportFileObj = open(l_unsupportFileName, "a+")
+                  l_unsupportFileObj.write(ln)
+
+         if l_delayLine.found:
             l_resultFileObj.write(l_delayLine.__str__())
 
       if l_unsupportFileObj is not None:

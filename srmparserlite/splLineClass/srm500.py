@@ -144,11 +144,12 @@ class LineClass(object):
 
 @VersionDeco(500)
 class LiteLineClass(object):
-   __slots__ = ["line", "bundle", "found"]
+   __slots__ = ["line", "bundle", "bundleFlag", "found"]
 
    def __init__(this):
       this.line = ""
       this.bundle = []
+      this.bundleFlag = False
       this.found = False
 
    def __str__(this):

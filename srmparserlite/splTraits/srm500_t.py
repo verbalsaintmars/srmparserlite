@@ -46,7 +46,7 @@ class SrmTrait(object):
                      r"(?:opID=(?P<OPID>.*?))?\]"
       this.typeFmt = r"\[(?P<TYPE>\w+)\]"
       this.dataFmt = r""
-      this.bundleFmt = r"^-->"
+      this.bundleFmt = r"(?P<BUNDLE>^-->.*)"
 
    def getHeaderFmt(this):
       return this.headerFmt

@@ -148,7 +148,10 @@ class TimeFilter(object):
       this.dateTime = this.dateTime.replace(tzinfo=TimeZone(l_timezone))
       this.dateTime = TimeFilterMap[this.filterFlag](this.dateTime)
 
-   def ApplyLess(this, a_timeStr):
+   def ApplyLessEq(this, a_timeStr):
+      """
+         Apply Less Equal
+      """
       l_timezone = a_timeStr[this.trait.TIMEFMT["TimeZoneOffSet"]:]
       l_dateTime = datetime.strptime(
          a_timeStr[:this.trait.TIMEFMT["TimeZoneOffSet"]],
