@@ -1,9 +1,16 @@
 time1:
    start: "2013-07-23T20:30:09.705+02:00"
-   end: "2013-07-23T23:26:02.930+02:00"
+   end: "2013-07-23T21:16:54.312+02:00"
+   flag: "milli"
+
+time2:
+   start: "2013-07-23T23:26:02.837+02:00"
+   end: "2013-07-23T23:26:02.843+02:00"
    flag: "milli"
 
 info1: ["03528", "error"]
+info2: ["00416", "verbose"]
+info3: ["PersistableRWLock"]
 type1: ["PCM"]
 data1: ["com.vmware.vcDr.ProtectedVmRemovedEvent"]
 bundle1: ["System.Read"]
@@ -11,17 +18,42 @@ bundle1: ["System.Read"]
 srmsite1_criteria:
    name: "Site1Criria"
    time: "time1"
-   info: ["info1"]
-   type: ["type1"]
-   data: ['data1']
-   bundle: ['bundle1']
-   logfilename: "ha_result"
+   info: []
+   type: []
+   data: []
+   bundle: []
+   logfilename: "ha1_1_result"
+
+srmsite21_criteria:
+   name: "Site21Criria"
+   time: "time2"
+   info: ['info2']
+   type: []
+   data: []
+   bundle: []
+   logfilename: "Ha2_1_result"
+
+srmsite22_criteria:
+   name: "Site22Criria"
+   time: "time1"
+   info: ['info3']
+   type: []
+   data: []
+   bundle: []
+   logfilename: "Ha2_2_result"
 
 srmSite1:
    criteria: ["srmsite1_criteria"]
    name: "SrmSite1"
    dir: "/myfiles/Source/vsProject/srmparserlite/pplog"
+   type: "sync"
+   dayoffset: 1
+
+srmSite2:
+   criteria: ["srmsite21_criteria", "srmsite22_criteria"]
+   name: "SrmSite1"
+   dir: "/myfiles/Source/vsProject/srmparserlite/vvlog"
    type: "config"
    dayoffset: 1
 
-sites: ["srmSite1"]
+sites: ["srmSite1", "srmSite2"]

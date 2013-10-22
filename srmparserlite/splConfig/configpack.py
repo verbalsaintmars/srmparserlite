@@ -4,22 +4,6 @@ from ..splFilter.filterr import TimeFilter
 from ..splGeneral.exceptions import ConfigTimeErrorMsg
 
 
-def TestOutScope(this, a_criteria, a_ln):
-  l_startTimeFilter = TimeFilter(
-        this.srmVersion,
-        # strip will be removed , let reader handle this
-        a_criteria["time"]["start"].strip(),
-        a_criteria["time"]["flag"].strip())
-
-  if not l_startTimeFilter.ApplyLess(a_criteria["time"]["end"].strip()):
-     print(ConfigTimeErrorMsg(
-        this.siteCriterion[0]["name"],
-        a_criteria["name"],
-        a_criteria["time"]["start"],
-        a_criteria["time"]["end"]))
-     return
-
-
 @VersionDeco(1)
 class PrepareConfig(object):
    __slots__ = ["sites", "syncState", "syncTime"]
@@ -29,15 +13,16 @@ class PrepareConfig(object):
       this.syncTime = []
       this.syncState = False
 
+   def CheckZeroCriteria(this):
+      this.sites[:] = \
+         [l_site for l_site in this.sites if l_site["criteria"].__len__() != 0]
+
    def CheckModifyState(this):
       v_tmpConfig = None
 
       for l_site in this.sites:
-
          if l_site["type"] == "sync":
-
             if this.syncState is False:
-
                for l_criteria in l_site["criteria"]:
                   this.syncTime.append(l_criteria["time"])
 
@@ -82,33 +67,32 @@ class SplTime(object):
          "timeMap",
          "start",
          "end",
-         "flag"]
+         "flag",
+         "chkErr"]
 
    def __init__(this, a_start, a_end, a_flag):
       this.start = a_start
       this.end = a_end
       this.flag = a_flag
+      this.chkErr = False
+
       l_startTimeFilter = TimeFilter(
-           this.srmVersion,
-           # strip will be removed , let reader handle this
-           a_criteria["time"]["start"].strip(),
-           a_criteria["time"]["flag"].strip())
+         "500",  # use SRM 5.0.0's time trait to parse it for checking.... auh~~
+         a_start,
+         a_flag)
 
-      if not l_startTimeFilter.ApplyLess(a_criteria["time"]["end"].strip()):
-        print(ConfigTimeErrorMsg(
-           this.siteCriterion[0]["name"],
-           a_criteria["name"],
-           a_criteria["time"]["start"],
-           a_criteria["time"]["end"]))
-        return
-
+      if not l_startTimeFilter.ApplyLessEq(a_end):
+         this.chkErr = True
 
    def genTime(this):
-      this.timeMap = {
-            "start": this.start,
-            "end": this.end,
-            "flag": this.flag}
-      return this.timeMap
+      if this.chkErr:
+         return False
+      else:
+         this.timeMap = {
+               "start": this.start,
+               "end": this.end,
+               "flag": this.flag}
+         return this.timeMap
 
 
 @VersionDeco(1)
@@ -133,15 +117,18 @@ class SplCriteria(object):
       this.logFileName = a_lfn
 
    def genCri(this):
-      this.criMap = {
-            "name": this.name,
-            "time": this.theTime,
-            "info": this.info,
-            "type": this.theType,
-            "data": this.theData,
-            "bundle": this.bundle,
-            "logfilename": this.logFileName}
-      return this.criMap
+      if this.theTime is False:
+         return False
+      else:
+         this.criMap = {
+               "name": this.name,
+               "time": this.theTime,
+               "info": this.info,
+               "type": this.theType,
+               "data": this.theData,
+               "bundle": this.bundle,
+               "logfilename": this.logFileName}
+         return this.criMap
 
 
 @VersionDeco(1)
@@ -180,15 +167,15 @@ class ReadYaml(object):
 
    def genTime(this, a_time, a_yaml):
       return SplTime(
-         a_yaml[a_time]['start'], a_yaml[a_time]['end'],
-         a_yaml[a_time]['flag']).genTime()
+         a_yaml[a_time]['start'].strip(), a_yaml[a_time]['end'].strip(),
+         a_yaml[a_time]['flag'].strip()).genTime()
 
    def genTuple(this, a_list, a_yaml):
       l_listBundle = []
       for l_element in a_list:
          l_splList = SplList()
          for l_str in a_yaml[l_element]:
-            l_splList.addList(l_str)
+            l_splList.addList(l_str.strip())
          l_listBundle.append(l_splList.getTuple())
 
       return tuple(l_listBundle)
@@ -196,14 +183,22 @@ class ReadYaml(object):
    def genCri(this, a_list, a_yaml):
       l_criteria = []
       for l_cri in a_list:
-          l_criteria.append(SplCriteria(
-             a_yaml[l_cri]['name'],
-             this.genTime(a_yaml[l_cri]['time'], a_yaml),
-             this.genTuple(a_yaml[l_cri]['info'], a_yaml),
-             this.genTuple(a_yaml[l_cri]['type'], a_yaml),
-             this.genTuple(a_yaml[l_cri]['data'], a_yaml),
-             this.genTuple(a_yaml[l_cri]['bundle'], a_yaml),
-             a_yaml[l_cri]['logfilename']).genCri())
+         l_splCri = SplCriteria(
+            a_yaml[l_cri]['name'].strip(),
+            this.genTime(a_yaml[l_cri]['time'], a_yaml),
+            this.genTuple(a_yaml[l_cri]['info'], a_yaml),
+            this.genTuple(a_yaml[l_cri]['type'], a_yaml),
+            this.genTuple(a_yaml[l_cri]['data'], a_yaml),
+            this.genTuple(a_yaml[l_cri]['bundle'], a_yaml),
+            a_yaml[l_cri]['logfilename'].strip()).genCri()
+
+         if l_splCri is False:
+            print(ConfigTimeErrorMsg(
+               a_yaml[l_cri]['name'].strip(),
+               a_yaml[a_yaml[l_cri]['time']]['start'].strip(),
+               a_yaml[a_yaml[l_cri]['time']]['end'].strip()))
+         else:
+            l_criteria.append(l_splCri)
 
       return tuple(l_criteria)
 
@@ -217,6 +212,6 @@ class ReadYaml(object):
             l_oneYaml[l_site]['dir'].strip(),
             this.genCri(l_oneYaml[l_site]['criteria'], l_oneYaml),
             l_oneYaml[l_site]['type'].strip(),
-            l_oneYaml[l_site]['dayoffset'].strip()).genSite())
+            l_oneYaml[l_site]['dayoffset']).genSite())
 
       return tuple(l_sites)

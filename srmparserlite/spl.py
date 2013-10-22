@@ -39,9 +39,13 @@ class Start(object):
    def Start(this, a_sites):
       # Check One Big File existence
       l_siteMap = this.BigFileTest(a_sites)
-      a_sites = tuple(value for value in l_siteMap.itervalues())
-      # Sync time for criteria or not
+      a_sites = [value for value in l_siteMap.itervalues()]
+      # Sync time for criteria or not, also check criteria == 0
       this.TakeConfigs(a_sites)
+
+      if a_sites.__len__() == 0:
+         print("Nothing to do~~~ boring...")
+         return
 
       l_tpool = mpo.ThreadPool(processes=mpo.cpu_count())
       l_result = l_tpool.map_async(parser.Parser(), a_sites, 2)
@@ -70,6 +74,7 @@ class Start(object):
       See if it's configure in type 'sync' to generate sync time log between sites
       """
       l_pc = configpack.PrepareConfig(a_sites)
+      l_pc.CheckZeroCriteria()
       l_pc.CheckModifyState()
 
 

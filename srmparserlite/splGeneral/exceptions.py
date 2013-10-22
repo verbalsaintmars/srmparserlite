@@ -1,15 +1,15 @@
 __package__ = "srmparserlite.splGeneral"
 
 ConfigTimeErrorMsgTemplate = \
-   "Site : {0} , Criteria : {1} >> Start time : {2} is ahead of End time : {3} \n" \
+   "Criteria : {0} >> Start time : {1} is ahead of End time : {2} \n" \
    "Criteria is not processed"
 
 
 ExceptionMsgTemplate = "Source location : {0} >> Error message :{1}"
 
 
-def ConfigTimeErrorMsg(a_site, a_criteria, a_stime, a_etime):
-   return ConfigTimeErrorMsgTemplate.format(a_site, a_criteria, a_stime, a_etime)
+def ConfigTimeErrorMsg(a_criteria, a_stime, a_etime):
+   return ConfigTimeErrorMsgTemplate.format(a_criteria, a_stime, a_etime)
 
 
 class GenSrcLocation(object):

@@ -29,7 +29,7 @@ class SrmTrait(object):
          r"\d{2}:\d{2})" \
          r"\s" \
          r"(?:\[(?P<INFO>(?P<TID>\d+)\s(?P<LOGINFO>\w+)\s" \
-         r"\'(?P<CLASS>\w+)\'\s?(?P<OTHERINFO>.*?))\])\s?" \
+         r"\'(?P<CLASS>.*?)\'\s?(?P<OTHERINFO>.*?))\])\s?" \
          r"(?:\[(?P<TYPE>.*?)\])?\s?" \
          r"(?P<DATA>.*)"
 
@@ -46,7 +46,7 @@ class SrmTrait(object):
                      r"(?:opID=(?P<OPID>.*?))?\]"
       this.typeFmt = r"\[(?P<TYPE>\w+)\]"
       this.dataFmt = r""
-      this.bundleFmt = r"(?P<BUNDLE>^-->.*)"
+      this.bundleFmt = r"(?P<BUNDLE>(?:^-->.*)|(?:^\[#\d+\] -->))"
 
    def getHeaderFmt(this):
       return this.headerFmt
