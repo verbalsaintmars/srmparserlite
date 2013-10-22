@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import srmparserlite.spl as spl
 import srmparserlite.splConfig.configpack as configpack
 import srmparserlite.splTraits.filefmt as filefmt
