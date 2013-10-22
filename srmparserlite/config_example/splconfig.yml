@@ -1,59 +1,61 @@
 time1:
    start: "2013-07-23T20:30:09.705+02:00"
-   end: "2013-07-23T21:34:31.145+02:00"
+   end: "2013-07-23T21:01:04.761+02:00"
    flag: "milli"
 
 time2:
-   start: "2013-07-23T20:30:09.705+02:00"
-   end: "2013-07-24T08:59:47.068+02:00"
+   start: "2013-07-22T09:38:58.779+02:00"
+   end: "2013-07-22T15:03:11.256+02:00"
    flag: "milli"
 
-info1: ["04244", "error"]
-info2: ["04764", "verbose"]
-info3: ["PersistableRWLock"]
-type1: ["PCM"]
-data1: ["com.vmware.vcDr.ProtectedVmRemovedEvent"]
-bundle1: ["test"]
-bundle2: ["group-v965"]
+info1-1: ["04116", "verbose"]
+info1-2: ["7b918233"]
+info2-1: ["01944", "verbose"]
+info2-2: ["C76063D7-00000212"]
+type1-1: ["PCM"]
+type1-2: ["PCM"]
+data1-1: ["com.vmware.vcDr.ProtectedVmRemovedEvent"]
+bundle1-1: ["System.Read"]
+bundle2-1: []
 
 srmsite1_criteria:
    name: "Site1Criria"
    time: "time1"
-   info: [info1]
+   info: [info1-1, info1-2]
    type: []
    data: []
-   bundle: [bundle1]
-   logfilename: "ha1_1_result"
+   bundle: []
+   logfilename: "PrimarySite_Result"
 
 srmsite21_criteria:
    name: "Site21Criria"
    time: "time2"
-   info: [info2]
+   info: [info2-1, info2-2]
    type: []
    data: []
-   bundle: [bundle2]
-   logfilename: "Ha2_1_result"
+   bundle: []
+   logfilename: "SecondarySite_Criteria21_Result"
 
 srmsite22_criteria:
    name: "Site22Criria"
    time: "time1"
-   info: ['info3']
+   info: []
    type: []
    data: []
    bundle: []
-   logfilename: "Ha2_2_result"
+   logfilename: "SecondarySite_Criteria22_Result"
 
 srmSite1:
    criteria: ["srmsite1_criteria"]
    name: "SrmSite1"
-   dir: /myfiles/Source/vsProject/logs/rpplog/
+   dir: C:\Source\bug\working\1078599\SRM_PROT\Logs
    type: "config"
    dayoffset: 1
 
 srmSite2:
    criteria: ["srmsite21_criteria"]
    name: "SrmSite2"
-   dir: /myfiles/Source/vsProject/logs/rsslog/
+   dir: C:\Source\bug\working\1078599\SRM_REC\Logs
    type: "config"
    dayoffset: 1
 

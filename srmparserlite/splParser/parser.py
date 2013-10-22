@@ -84,17 +84,10 @@ class ParsingCriterion(object):
          if l_singleFlag:
             break
          for l_kindc in l_kind:
-            print("!!!WHAT!!!")
-            print(a_m.group(a_kind.upper()))
-            print(l_kindc)
-            print(a_ln)
             if re.search(l_kindc, a_m.group(a_kind.upper()), re.I) is None:
                l_singleFlag = False
-               print("!!SHIT!!")
                break
             else:
-               print("FOUND!!")
-               print(a_ln)
                l_singleFlag = True
 
       return l_singleFlag
@@ -106,8 +99,6 @@ class ParsingCriterion(object):
       if l_criterion["bundle"].__len__() == 0:
          l_found = True
       else:
-         print("!!!bundle!!!")
-         print(a_ln)
          l_found = this.TestLineKind(a_m, a_ln, "bundle")
 
       return l_found
