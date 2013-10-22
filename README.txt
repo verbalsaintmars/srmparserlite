@@ -2,7 +2,7 @@
 SRM Parser Lite
 ===============
 Purpose of creating Srm Parser Lite
-During debugging through the logs, it's a burden for engineers to grep the log with
+While debugging through the logs, it's a burden for engineers to grep the log with
 keywords in a certain range of time and criteria.
 
 Engineers need a better tool that could help them to parse the log in a synced log time
