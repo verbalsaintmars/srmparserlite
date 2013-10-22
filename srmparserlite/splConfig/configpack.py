@@ -204,7 +204,13 @@ class ReadYaml(object):
 
    def LoadYaml(this):
       import yaml
-      l_oneYaml = yaml.load(open(this.yfileName, 'r'))
+      try:
+         l_oneYaml = yaml.load(open(this.yfileName, 'r'))
+      except IOError:
+         print("Loading " + this.yfileName + " error! Config file might not exist or"
+               " spl does not have permission to access.")
+         return False
+
       l_sites = []
       for l_site in l_oneYaml['sites']:
          l_sites.append(SplSite(

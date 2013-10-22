@@ -18,6 +18,11 @@ def SrmLogGzFileNameFormater():
 
 
 @VersionDeco(1)
+def DefaultUnsupportFileName():
+   return r"_UnsupportFormat"
+
+
+@VersionDeco(1)
 def OneBigLogFileName():
    return r"OneBigLog.log"
 

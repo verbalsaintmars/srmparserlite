@@ -144,7 +144,7 @@ class ParsingCriterion(object):
            a_criteria["time"]["flag"].strip())
 
       l_unsupportFileName = GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
-               a_criteria["logfilename"] + "_UnsupportFormat")
+               a_criteria["logfilename"] + filefmt.DefaultUnsupportFileName())
       l_unsupportFileObj = None
 
       with open(GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
