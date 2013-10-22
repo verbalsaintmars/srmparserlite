@@ -1,15 +1,13 @@
 #!/usr/bin/env python
 r"""
-TODO 1. read config through configpack module
+DONE 1. read config through configpack module
 DONE 2. locate log , if can generate one big file, proceed, else, stop.
 DONE 3. after generate one big file, start to use Parser.
-TODO 4. Parser will take config object and sift each line before write the result
+DONE 4. Parser will take config object and sift each line before write the result
 DONE 5. the result will be at the same directory as log files
 DONE 6. the result will have the file name format: *.spl => *_spl.log , now even better,
    user could specify file name in the config
 TODO 9. user can input time criteria through command line.
-   spl will generate result files syncced with time between sites under each log file
-   location. file name : splsync_{nu}.log
 """
 import splFileManager.fm as fm
 import splConfig.configpack as configpack
@@ -50,6 +48,9 @@ class Start(object):
       l_result.get()
 
    def BigFileTest(this, a_sites):
+      """
+      If dir can not produce one big file, then remove from dir set
+      """
       l_siteMap = {a_site["dir"]: a_site for a_site in a_sites}
 
       l_DirOffsetMap = []
@@ -60,11 +61,14 @@ class Start(object):
       l_results = fm.GenBigFile().Start(*l_DirOffsetMap)
 
       for res in l_results:
-         if not res[0]:
+         if not res[0]:  # res is (False/True, dir)
             del l_siteMap[res[1]]
       return l_siteMap
 
    def TakeConfigs(this, a_sites):
+      """
+      See if it's configure in type 'sync' to generate sync time log between sites
+      """
       l_pc = configpack.PrepareConfig(a_sites)
       l_pc.CheckModifyState()
 

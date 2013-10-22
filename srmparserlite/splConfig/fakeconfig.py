@@ -21,7 +21,7 @@ Type2 = ("PCM",)
 Data1 = ("com.vmware.vcDr.ProtectedVmRemovedEvent",)
 Data2 = ("vm-6150",)
 
-Bundle1 = ("fuck2",)
+Bundle1 = ()
 Bundle2 = ("System.Read",)
 
 

@@ -10,7 +10,6 @@ from ..splFileManager.filenamegen import GenResultFile
 from ..splGeneral.exceptions import GenSrcLocation
 from ..splGeneral.exceptions import NoHeaderLineException
 from ..splGeneral.exceptions import NoTraitException
-from ..splGeneral.exceptions import ConfigTimeErrorMsg
 from ..splTraits import filefmt
 from ..splTraits.traits import Traits
 from ..splTraits.traits import LineClasses
@@ -173,16 +172,16 @@ class ParsingCriterion(object):
                   l_delayLine.bundleFlag = False
 
                if not l_startTimeFilter.ApplyLessEq(l_m.group("TIME")):
-                  l_delayLine.line = "default"
+                  l_delayLine.init = True
                   continue
                elif not l_endTimeFilter.ApplyLessEq(l_m.group("TIME")):
+                  l_delayLine.init = True
                   if this.TestLine(l_m, ln):
                      l_delayLine.line = ln
                      l_delayLine.found = True
                   continue
                else:
                   break
-
             l_m = re.match(this.trait.BUNDLEFMT, ln)
             if l_m is not None:
                if l_delayLine.found:
@@ -191,7 +190,7 @@ class ParsingCriterion(object):
 
                   l_delayLine.bundle.append(ln)
 
-               elif l_delayLine.line == "":
+               elif not l_delayLine.init:
                   if this.TestBundle(l_m, ln):
                      l_delayLine.bundle.append(ln)
                      l_delayLine.bundleFlag = True

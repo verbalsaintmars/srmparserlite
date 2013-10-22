@@ -2,6 +2,11 @@ __package__ = "srmparserlite.splTraits"
 from ..splGeneral.deco import VersionDeco
 
 
+@VersionDeco(1)
+def DefaultYamlFile():
+   return "splconfig.yml"
+
+
 @VersionDeco(500)
 def SrmLogFileNameFormater():
    return r"vmware-dr-\d+\.log"

@@ -56,11 +56,16 @@ def TestSplFilter():
 
 def TestSpl():
    import srmparserlite.spl as spl
-   import srmparserlite.splConfig.fakeconfig as fakeconfig
-   singleSite = fakeconfig.singleSite
-   doubleSite = fakeconfig.doubleSite
+   import srmparserlite.splConfig.configpack as configpack
+   import srmparserlite.splTraits.filefmt as filefmt
+   import pprint
+   #import srmparserlite.splConfig.fakeconfig as fakeconfig
+   #singleSite = fakeconfig.singleSite
+   #doubleSite = fakeconfig.doubleSite
+   l_sites = configpack.ReadYaml(filefmt.DefaultYamlFile()).LoadYaml()
+   pprint.pprint(l_sites)
    sp = spl.Start()
-   sp.Start(doubleSite)
+   sp.Start(l_sites)
 
 if __name__ == '__main__':  # Only when run
    #TestUnzipFunc()
