@@ -211,9 +211,9 @@ class ParsingCriterion(object):
 
    def GetVersion(this):
       import importlib
-      from ..splTraits.general import VersionFmt
+      from ..splTraits.general import GeneralFmt
 
-      l_ver = VersionFmt()
+      l_ver = GeneralFmt()
       l_rb = ReadBigFile(this.siteCriterion[0]["dir"])
       l_iter = l_rb.Read()
       l_header = next(l_iter)

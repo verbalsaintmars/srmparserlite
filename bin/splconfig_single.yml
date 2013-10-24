@@ -31,11 +31,4 @@ PrimarySite:
    dayoffset: 1
 
 
-SecondarySite:
-   criteria: [criteria_for_primary]
-   name: PrimarySite
-   dir: /myfiles/Source/vsProject/logs/sslog/
-   type: config
-   dayoffset: 1
-
-sites: [PrimarySite, SecondarySite]
+sites: [PrimarySite]

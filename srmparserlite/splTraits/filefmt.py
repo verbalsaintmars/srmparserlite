@@ -23,6 +23,11 @@ def DefaultUnsupportFileName():
 
 
 @VersionDeco(1)
+def DefaultResultFileName():
+   return r"splResult"
+
+
+@VersionDeco(1)
 def OneBigLogFileName():
    return r"OneBigLog.log"
 

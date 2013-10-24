@@ -26,12 +26,12 @@ class ConcatLog(object):
       this.srmTrait = None
 
    def WriteSingleFile(this, a_fileObj):
-      from ..splTraits.general import VersionFmt
+      from ..splTraits.general import GeneralFmt
       from os import SEEK_END
       import importlib
       if this.numOfFiles == 1:
          l_headLine = a_fileObj.readline()
-         l_verp = VersionFmt()
+         l_verp = GeneralFmt()
          l_m = re.match(l_verp.VERSIONFMT, l_headLine)
 
          if l_m is not None:
@@ -58,7 +58,7 @@ class ConcatLog(object):
          if this.srmTrait is None:
             this.numOfFiles = 1
             l_headLine = a_fileObj.readline()
-            l_verp = VersionFmt()
+            l_verp = GeneralFmt()
             l_m = re.match(l_verp.VERSIONFMT, l_headLine)
 
             if l_m is not None:

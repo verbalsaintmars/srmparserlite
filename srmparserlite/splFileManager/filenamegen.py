@@ -16,6 +16,9 @@ class GenResultFile(object):
       this.rootDir = os.path.normpath(a_rootDir)
 
    def genFileName(this, a_baseFileName="sqlresult_"):
+      if a_baseFileName == '':
+         a_baseFileName = 'sqlresult_'
+
       l_num = 1
       l_fileIter = glob.iglob(
          os.path.join(
