@@ -3,7 +3,7 @@ from ..splGeneral.deco import VersionDeco
 import srm500_t
 
 
-@VersionDeco(501)  # Have class variable ClassVersion
+@VersionDeco(510)  # Have class variable ClassVersion
 class SrmTrait(srm500_t.SrmTrait):
    __slots__ = ["trailOffSet"]
 
