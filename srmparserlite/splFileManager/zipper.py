@@ -90,6 +90,7 @@ class GzipHandler(object):
 
    def TakeFile(this, a_fileName, a_sfileObj):
       import gzip
+      import os
       l_unzipFlag = False
       #print("GzipHandler:TakeFile: a_fileName : " + a_fileName)
       with gzip.open(a_fileName) as l_fileObj:
@@ -108,10 +109,8 @@ class GzipHandler(object):
 
          l_match = None
          for fn in l_fileNames:
-            #print("fn : " + fn)
-            l_match = re.match(this.formater, fn)
+            l_match = re.match(this.formater, os.path.basename(fn), re.I)
             if l_match is not None:
-               #print("filename : " + fn + "is valid.")
                l_unzipFlag = True
                break
 
@@ -142,7 +141,6 @@ class GzipHandler(object):
       Return File names inside the gz file
       """
       import struct
-
       from gzip import FEXTRA, FNAME
       a_fileObj.seek(0)
       magic = a_fileObj.read(2)
@@ -156,6 +154,7 @@ class GzipHandler(object):
         fname = a_fileObj.name
         if fname.endswith('.gz'):
             fname = fname[:-3]
+        a_fileObj.seek(0)
         return fname
 
       if flag & FEXTRA:
