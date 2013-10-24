@@ -1,11 +1,11 @@
 time_range:
-   start: ''
+   start: '2013-04-29T15:55:03.005-04:00'
    end: ''
-   flag: milli
+   flag: hour
 
-info_1: [04668, warning]
+info_1: [02316]
 
-info_2: ['344383e1:93d']
+info_2: ['ThreadPool']
 
 type_1: [PCM]
 
@@ -27,15 +27,15 @@ PrimarySite:
    criteria: [criteria_for_primary]
    name: PrimarySite
    dir: /myfiles/Source/vsProject/logs/realpp/
-   type: config
+   type: sync
    dayoffset: 0
 
 
 SecondarySite:
    criteria: [criteria_for_primary]
    name: PrimarySite
-   dir: /myfiles/Source/vsProject/logs/sslog/
+   dir: /myfiles/Source/vsProject/logs/realss/
    type: config
    dayoffset: 1
 
-sites: [PrimarySite]
+sites: [PrimarySite, SecondarySite]
