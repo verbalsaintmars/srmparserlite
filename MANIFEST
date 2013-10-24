@@ -9,7 +9,9 @@ srmparserlite/spl.py
 srmparserlite/config_example/splconfig.yml
 srmparserlite/splConfig/__init__.py
 srmparserlite/splConfig/configpack.py
+srmparserlite/splConfig/configreader.py
 srmparserlite/splConfig/fakeconfig.py
+srmparserlite/splConfig/validator.py
 srmparserlite/splFileManager/__init__.py
 srmparserlite/splFileManager/filenamegen.py
 srmparserlite/splFileManager/fm.py

@@ -6,7 +6,7 @@ from ..splGeneral.deco import VersionDeco
 
 
 #Section for VMware vCenter Site Recovery Manager, pid=2344, version=5.0.1, build=build-633117, option=Release
-@VersionDeco(510)
+@VersionDeco(500)
 class HeadLineClass(object):
    __slots__ = [
          "processedFlag",
@@ -64,7 +64,7 @@ class HeadLineClass(object):
 
 
 #2013-07-23T20:30:09.705+02:00 [04116 verbose 'DatastoreGroupManager' opID=528a0d41] Processing virtual machine 'vm-6150'
-@VersionDeco(510)
+@VersionDeco(500)
 class LineClass(object):
    __slots__ = [
          "bundleFlag",
@@ -142,7 +142,7 @@ class LineClass(object):
    BUNDLE = property(getBundle, setBundle)
 
 
-@VersionDeco(510)
+@VersionDeco(500)
 class LiteLineClass(object):
    __slots__ = ["line", "bundle", "bundleFlag", "found", "init"]
 
