@@ -1,11 +1,11 @@
 time_range:
-   start: '2013-07-23T20:30:09.705+02:00'
-   end: '2013-07-24T06:13:24.722+02:00'
-   flag: milli
+   start: '2013-04-29T15:55:03.005-04:00'
+   end: ''
+   flag: hour
 
-info_1: [04668, warning]
+info_1: [02316]
 
-info_2: ['344383e1:93d']
+info_2: ['ThreadPool']
 
 type_1: [PCM]
 
@@ -16,25 +16,25 @@ bundle_1: ['vm-996']
 criteria_for_primary:
    name: "primary site criterion"
    time: time_range
-   info: [info_1, info_2]
-   type: [type_1]
-   data: [data_1]
-   bundle: [bundle_1]
+   info: []
+   type: []
+   data: []
+   bundle: []
    logfilename: "PrimarySiteResult"
 
 
 PrimarySite:
    criteria: [criteria_for_primary]
    name: PrimarySite
-   dir: /myfiles/Source/vsProject/logs/pplog/
-   type: config
-   dayoffset: 1
+   dir: /myfiles/Source/vsProject/logs/realpp/
+   type: sync
+   dayoffset: 0
 
 
 SecondarySite:
    criteria: [criteria_for_primary]
    name: PrimarySite
-   dir: /myfiles/Source/vsProject/logs/sslog/
+   dir: /myfiles/Source/vsProject/logs/realss/
    type: config
    dayoffset: 1
 
