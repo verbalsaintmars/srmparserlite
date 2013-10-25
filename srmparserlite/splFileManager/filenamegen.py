@@ -15,6 +15,22 @@ class GenResultFile(object):
    def __init__(this, a_rootDir):
       this.rootDir = os.path.normpath(a_rootDir)
 
+   def genDefaultName(this, a_num, a_formater):
+      l_repl = r"\1_" + str(a_num) + r"\2"
+      l_newFileName = re.sub(
+         a_formater.REPLACEFORMAT,
+         l_repl,
+         a_formater.FILENAME)
+      return os.path.join(this.rootDir, l_newFileName)
+
+   def genUnsupportedName(this, a_num, a_formater):
+      l_repl = r"\1_" + str(a_num) + r"_\2\3"
+      l_newFileName = re.sub(
+         a_formater.UNREPLACEFORMAT,
+         l_repl,
+         a_formater.UNFILENAME)
+      return os.path.join(this.rootDir, l_newFileName)
+
    def genFileName(this, a_baseFileName="sqlresult_"):
       if a_baseFileName == '':
          a_baseFileName = 'sqlresult_'
@@ -25,6 +41,7 @@ class GenResultFile(object):
             this.rootDir, "*.log"))
 
       l_formater = filefmt.ResultFileFormater(a_baseFileName)
+
       for resultFn in l_fileIter:
          l_m = re.match(
             l_formater.NUMFORMAT,
@@ -33,9 +50,5 @@ class GenResultFile(object):
             if int(l_m.group("NUM")) >= l_num:
                l_num = int(l_m.group("NUM")) + 1
 
-      l_repl = r"\1_" + str(l_num) + r"\2"
-      l_newFileName = re.sub(
-         l_formater.REPLACEFORMAT,
-         l_repl,
-         l_formater.FILENAME)
-      return os.path.join(this.rootDir, l_newFileName)
+      return (this.genDefaultName(l_num, l_formater),
+              this.genUnsupportedName(l_num, l_formater))

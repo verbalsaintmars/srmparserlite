@@ -38,4 +38,4 @@ SecondarySite:
    type: config
    dayoffset: 1
 
-sites: [PrimarySite, SecondarySite]
+sites: [PrimarySite]

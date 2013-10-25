@@ -9,17 +9,17 @@ def DefaultYamlFile():
 
 @VersionDeco(500)
 def SrmLogFileNameFormater():
-   return r"vmware-dr-\d+\.log"
+   return r"vmware-dr-(?P<NUM>\d+)\.log"
 
 
 @VersionDeco(500)
 def SrmLogGzFileNameFormater():
-   return r"vmware-dr-\d+\.log\.gz"
+   return r"vmware-dr-(?P<NUM>\d+)\.log\.gz"
 
 
 @VersionDeco(1)
 def DefaultUnsupportFileName():
-   return r"_UnsupportFormat"
+   return r"UnsupportFormat"
 
 
 @VersionDeco(1)
@@ -37,23 +37,38 @@ class ResultFileFormater(object):
    #splresult_{nu}.log
    __slots__ = [
       "numFormat",
-      "replaceFormat",
-      "fileName"]
+      "defaultReplaceFormat",
+      "defaultFileName",
+      "unsupportedReplaceFormat",
+      "unsupportedFilename"]
 
    def __init__(this, a_baseFileName):
       this.numFormat = a_baseFileName.strip() + r"_(?P<NUM>\d+)\.log"
-      this.replaceFormat = r"(" + a_baseFileName.strip() + ")_\d+(\.log)"
-      this.fileName = a_baseFileName.strip() + "_0.log"
+      this.defaultReplaceFormat = r"(" + a_baseFileName.strip() + ")_\d+(\.log)"
+      this.defaultFileName = a_baseFileName.strip() + "_0.log"
+      this.unsupportedReplaceFormat = \
+         r"(" + a_baseFileName.strip() + r")_" + \
+         r"\d+_" + r"(" + DefaultUnsupportFileName() + r")(\.log)"
+      this.unsupportedFilename = a_baseFileName.strip() + r"_" + \
+                                 r"0_" + DefaultUnsupportFileName() + r".log"
+
+   def getUNReplaceformat(this):
+      return this.unsupportedReplaceFormat
+
+   def getUNFileName(this):
+      return this.unsupportedFilename
 
    def getNumFormat(this):
       return this.numFormat
 
    def getReplaceFormat(this):
-      return this.replaceFormat
+      return this.defaultReplaceFormat
 
    def getFileName(this):
-      return this.fileName
+      return this.defaultFileName
 
    NUMFORMAT = property(getNumFormat)
    REPLACEFORMAT = property(getReplaceFormat)
    FILENAME = property(getFileName)
+   UNREPLACEFORMAT = property(getUNReplaceformat)
+   UNFILENAME = property(getUNFileName)

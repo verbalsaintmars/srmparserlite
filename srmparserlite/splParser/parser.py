@@ -143,12 +143,13 @@ class ParsingCriterion(object):
            a_criteria["time"]["end"].strip(),
            a_criteria["time"]["flag"].strip())
 
-      l_unsupportFileName = GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
-               a_criteria["logfilename"] + filefmt.DefaultUnsupportFileName())
+      l_GenResultFileObj = GenResultFile(this.siteCriterion[0]["dir"])
+      l_fnResult = l_GenResultFileObj.genFileName(a_criteria["logfilename"])
+      l_unsupportFileName = l_fnResult[1]
+      l_logFileName = l_fnResult[0]
       l_unsupportFileObj = None
 
-      with open(GenResultFile(this.siteCriterion[0]["dir"]).genFileName(
-         a_criteria["logfilename"]), "w") as l_resultFileObj:
+      with open(l_logFileName, "w") as l_resultFileObj:
 
          l_resultFileObj.write(a_header)
 

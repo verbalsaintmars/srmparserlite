@@ -150,7 +150,7 @@ class ReadYaml(object):
          except (KeyError, AttributeError) as ke:
             l_stime = r"1900-01-01T00:00:00.000+00:00"
             l_etime = r"2100-01-01T00:00:00.000+00:00"
-            l_flag = "year"
+            l_flag = "milli"
             print("{" + ke.message + "}" + " attribute does not exist in time."
                   " Parse whole log.")
       except KeyError as ke:

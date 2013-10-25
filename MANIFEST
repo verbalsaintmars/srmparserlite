@@ -27,6 +27,7 @@ srmparserlite/splLineClass/__init__.py
 srmparserlite/splLineClass/srm500.py
 srmparserlite/splLineClass/srm501.py
 srmparserlite/splLineClass/srm503.py
+srmparserlite/splLineClass/srm510.py
 srmparserlite/splParser/__init__.py
 srmparserlite/splParser/parser.py
 srmparserlite/splTraits/__init__.py
@@ -35,5 +36,6 @@ srmparserlite/splTraits/general.py
 srmparserlite/splTraits/srm500_t.py
 srmparserlite/splTraits/srm501_t.py
 srmparserlite/splTraits/srm503_t.py
+srmparserlite/splTraits/srm510_t.py
 srmparserlite/splTraits/traits.py
 srmparserlite/unit_test/unit_test.py

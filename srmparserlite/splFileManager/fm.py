@@ -41,6 +41,14 @@ class ReadBigFile(object):
 
 
 @VersionDeco(1)
+def SortFileInNormal(a_filename):
+    """ Turn a string into a list of string and number chunks.
+        "z23a" -> ["z", 23, "a"]
+    """
+    return [ tryint(c) for c in re.split('([0-9]+)', s) ]
+
+
+@VersionDeco(1)
 class GenBigFile(object):
    """
    Generate one big log file
@@ -60,6 +68,8 @@ class GenBigFile(object):
       """
       l_gzFiles = []
       l_logFiles = []
+      l_gzFilesMap = {}
+      l_logFilesMap = {}
 
       l_globIter = glob.iglob(
             os.path.join(
@@ -68,12 +78,12 @@ class GenBigFile(object):
       for gzfn in l_globIter:
          l_m = re.match(filefmt.SrmLogGzFileNameFormater(), os.path.basename(gzfn))
          if l_m is not None:
-            l_gzFiles.append(gzfn)
+            l_gzFilesMap[l_m.group("NUM")] = gzfn
 
-      if l_gzFiles.__len__() == 0:
+      if l_gzFilesMap.__len__() == 0:
          l_gzFiles = None
       else:
-         l_gzFiles.sort()
+         l_gzFiles[:] = [l_gzFilesMap[i] for i in sorted(l_gzFilesMap)]
 
       l_globIter = glob.iglob(
          os.path.join(
@@ -82,12 +92,12 @@ class GenBigFile(object):
       for logfn in l_globIter:
          l_m = re.match(filefmt.SrmLogFileNameFormater(), os.path.basename(logfn))
          if l_m is not None:
-            l_logFiles.append(logfn)
+            l_logFilesMap[l_m.group("NUM")] = logfn
 
-      if l_logFiles.__len__() == 0:
+      if l_logFilesMap.__len__() == 0:
          l_logFiles = None
       else:
-         l_logFiles.sort()
+         l_logFiles[:] = [l_logFilesMap[i] for i in sorted(l_logFilesMap)]
 
       return this.GenSingleFile((a_rootDir[0], a_rootDir[1]), l_gzFiles, l_logFiles)
 
